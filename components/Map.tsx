@@ -18,7 +18,7 @@ const Map = () => {
     });
   }, []);
 
-  return <div className="h-1/2 w-full" ref={mapContainer}></div>;
+  return <div className="h-full" ref={mapContainer}></div>;
 };
 
 export default Map;
