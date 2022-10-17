@@ -1,9 +1,8 @@
 import Script from "next/script";
 import React, { useState } from "react";
+import DestinationMap from "../components/DestinationMap";
 
-import Places from "../components/Places";
-
-const Book = () => {
+const SetDestination = () => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
@@ -16,9 +15,9 @@ const Book = () => {
         }}
       />
 
-      {isLoaded && <Places />}
+      {isLoaded && <DestinationMap />}
     </div>
   );
 };
 
-export default Book;
+export default SetDestination;

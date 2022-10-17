@@ -11,12 +11,12 @@ import {
   ComboboxOption,
 } from "@reach/combobox";
 import { coordinate } from "../model";
+import { useDispatch } from "react-redux";
+import { setOrigin } from "../slices/navigationSlice";
 
-const Origin = ({
-  setSelected,
-}: {
-  setSelected: React.Dispatch<React.SetStateAction<coordinate>>;
-}) => {
+const Origin = () => {
+  const dispatch = useDispatch();
+
   const {
     ready,
     value,
@@ -33,7 +33,8 @@ const Origin = ({
 
     const { lat, lng } = getLatLng(results[0]);
 
-    setSelected({ lat, lng });
+    dispatch(setOrigin({ lat, lng }));
+    // setSelected({ lat, lng });
   };
 
   return (

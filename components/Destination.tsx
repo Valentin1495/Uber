@@ -12,11 +12,7 @@ import {
 } from "@reach/combobox";
 import { coordinate } from "../model";
 
-const Destination = ({
-  setSelected,
-}: {
-  setSelected: React.Dispatch<React.SetStateAction<coordinate>>;
-}) => {
+const Destination = () => {
   const {
     ready,
     value,
@@ -32,8 +28,6 @@ const Destination = ({
     const results = await getGeocode({ address });
 
     const { lat, lng } = getLatLng(results[0]);
-
-    setSelected({ lat, lng });
   };
 
   return (
