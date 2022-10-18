@@ -10,7 +10,6 @@ import {
   ComboboxList,
   ComboboxOption,
 } from "@reach/combobox";
-import { coordinate } from "../model";
 import { useDispatch } from "react-redux";
 import { setOrigin } from "../slices/navigationSlice";
 
@@ -34,11 +33,10 @@ const Origin = () => {
     const { lat, lng } = getLatLng(results[0]);
 
     dispatch(setOrigin({ lat, lng }));
-    // setSelected({ lat, lng });
   };
 
   return (
-    <div>
+    <div className="w-full">
       <Combobox onSelect={handleSelect}>
         <ComboboxInput
           value={value}

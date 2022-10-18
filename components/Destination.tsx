@@ -10,9 +10,12 @@ import {
   ComboboxList,
   ComboboxOption,
 } from "@reach/combobox";
-import { coordinate } from "../model";
+import { useDispatch } from "react-redux";
+import { setDestination } from "../slices/navigationSlice";
 
 const Destination = () => {
+  const dispatch = useDispatch();
+
   const {
     ready,
     value,
@@ -28,6 +31,8 @@ const Destination = () => {
     const results = await getGeocode({ address });
 
     const { lat, lng } = getLatLng(results[0]);
+
+    dispatch(setDestination({ lat, lng }));
   };
 
   return (
