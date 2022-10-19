@@ -45,11 +45,15 @@ const Destination = () => {
           className="bg-gray-200 w-full rounded-md h-10 pl-2 outline-none"
           placeholder="Where to?"
         />
-        <ComboboxPopover className="bg-white/60 p-2">
-          <ComboboxList className="space-y-2">
+        <ComboboxPopover className="bg-white/60">
+          <ComboboxList>
             {status === "OK" &&
               data.map(({ place_id, description }) => (
-                <ComboboxOption key={place_id} value={description} />
+                <ComboboxOption
+                  key={place_id}
+                  value={description}
+                  className="hover:cursor-pointer hover:bg-gray-100 font-bold p-2"
+                />
               ))}
           </ComboboxList>
         </ComboboxPopover>

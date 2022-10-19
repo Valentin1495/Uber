@@ -1,9 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { coordinate } from "../model";
+import { LatLng } from "use-places-autocomplete";
+type LatLngLiteral = google.maps.LatLngLiteral;
 
 export interface navigationState {
-  origin: coordinate;
-  destination: coordinate;
+  origin: LatLngLiteral | LatLng;
+  destination: LatLngLiteral | LatLng;
   traveltimeInfo: number | null;
 }
 
