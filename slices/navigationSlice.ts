@@ -3,19 +3,14 @@ import { LatLng } from "use-places-autocomplete";
 type LatLngLiteral = google.maps.LatLngLiteral;
 
 export interface navigationState {
-  origin: LatLngLiteral | LatLng;
-  destination: LatLngLiteral | LatLng;
+  origin: LatLngLiteral | LatLng | null;
+  destination: LatLngLiteral | LatLng | null;
   traveltimeInfo: number | null;
 }
 
-const seoul = {
-  lat: 35.907757,
-  lng: 127.766922,
-};
-
 const initialState: navigationState = {
-  origin: seoul,
-  destination: seoul,
+  origin: null,
+  destination: null,
   traveltimeInfo: null,
 };
 

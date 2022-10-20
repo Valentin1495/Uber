@@ -42,8 +42,9 @@ const Origin = () => {
           value={value}
           onChange={(e) => setValue(e.target.value)}
           disabled={!ready}
-          className="bg-gray-200 w-full rounded-md h-10 pl-2 outline-none font-bold"
+          className="bg-gray-200 w-full rounded-md h-14 px-2 outline-none text-2xl font-bold"
           placeholder="Where from?"
+          autoFocus
         />
         <ComboboxPopover className="bg-white/60">
           <ComboboxList>
@@ -52,7 +53,7 @@ const Origin = () => {
                 <ComboboxOption
                   key={place_id}
                   value={description}
-                  className="hover:cursor-pointer hover:bg-gray-100 font-bold p-2"
+                  className="hover:cursor-pointer hover:bg-gray-100 p-2"
                 />
               ))}
           </ComboboxList>
