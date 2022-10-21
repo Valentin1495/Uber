@@ -17,7 +17,7 @@ const Home: NextPage = () => {
         className="h-24 w-24 object-contain"
       />
       <div className="flex flex-col items-center gap-y-3">
-        <Link href="/navigation">
+        <Link href="/trips">
           <button
             className="bg-gray-200 rounded-md w-40 flex flex-col 
           items-center pb-5"

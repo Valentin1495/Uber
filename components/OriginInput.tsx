@@ -11,9 +11,9 @@ import {
   ComboboxOption,
 } from "@reach/combobox";
 import { useDispatch } from "react-redux";
-import { setOrigin } from "../slices/navigationSlice";
+import { setCenter, setOrigin, setZoom } from "../slices/navigationSlice";
 
-const Origin = () => {
+const OriginInput = () => {
   const dispatch = useDispatch();
 
   const {
@@ -33,6 +33,8 @@ const Origin = () => {
     const { lat, lng } = getLatLng(results[0]);
 
     dispatch(setOrigin({ lat, lng }));
+    dispatch(setCenter({ lat, lng }));
+    dispatch(setZoom(16));
   };
 
   return (
@@ -63,4 +65,4 @@ const Origin = () => {
   );
 };
 
-export default Origin;
+export default OriginInput;

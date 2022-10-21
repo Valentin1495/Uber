@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Script from "next/script";
 import Booking from "../components/Booking";
 
-const Navigation = () => {
+const Trips = () => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
@@ -20,4 +20,4 @@ const Navigation = () => {
   );
 };
 
-export default Navigation;
+export default Trips;

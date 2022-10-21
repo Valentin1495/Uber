@@ -1,17 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { LatLng } from "use-places-autocomplete";
-type LatLngLiteral = google.maps.LatLngLiteral;
+import { LatLngLiteral } from "../model";
 
 export interface navigationState {
-  origin: LatLngLiteral | LatLng | null;
-  destination: LatLngLiteral | LatLng | null;
+  origin: LatLngLiteral | null;
+  destination: LatLngLiteral | null;
   traveltimeInfo: number | null;
+  center: LatLngLiteral;
+  zoom: number;
 }
 
 const initialState: navigationState = {
   origin: null,
   destination: null,
   traveltimeInfo: null,
+  center: { lat: 37.5666791, lng: 126.9782914 },
+  zoom: 10,
 };
 
 export const navigationSlice = createSlice({
@@ -27,11 +30,22 @@ export const navigationSlice = createSlice({
     setTraveltimeInfo: (state, action) => {
       state.traveltimeInfo = action.payload;
     },
+    setCenter: (state, action) => {
+      state.center = action.payload;
+    },
+    setZoom: (state, action) => {
+      state.zoom = action.payload;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setOrigin, setDestination, setTraveltimeInfo } =
-  navigationSlice.actions;
+export const {
+  setOrigin,
+  setDestination,
+  setTraveltimeInfo,
+  setCenter,
+  setZoom,
+} = navigationSlice.actions;
 
 export default navigationSlice.reducer;

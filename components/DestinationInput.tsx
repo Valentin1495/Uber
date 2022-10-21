@@ -10,14 +10,14 @@ import {
   ComboboxList,
   ComboboxOption,
 } from "@reach/combobox";
-import { useDispatch } from "react-redux";
-import { setDestination } from "../slices/navigationSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { setCenter, setDestination, setZoom } from "../slices/navigationSlice";
+import { RootState } from "../store";
 
-const Destination = () => {
+const DestinationInput = () => {
   const dispatch = useDispatch();
-
+  const origin = useSelector((state: RootState) => state.navigation.origin);
   const {
-    ready,
     value,
     suggestions: { status, data },
     setValue,
@@ -33,6 +33,8 @@ const Destination = () => {
     const { lat, lng } = getLatLng(results[0]);
 
     dispatch(setDestination({ lat, lng }));
+    dispatch(setCenter({ lat, lng }));
+    dispatch(setZoom(16));
   };
 
   return (
@@ -41,7 +43,7 @@ const Destination = () => {
         <ComboboxInput
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          disabled={!ready}
+          disabled={!origin}
           className="bg-gray-200 w-full rounded-md h-14 px-2 outline-none text-2xl font-bold"
           placeholder="Where to?"
         />
@@ -62,4 +64,4 @@ const Destination = () => {
   );
 };
 
-export default Destination;
+export default DestinationInput;

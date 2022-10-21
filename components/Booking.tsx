@@ -1,43 +1,32 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { GoogleMap, MarkerF } from "@react-google-maps/api";
-import Origin from "./Origin";
+import OriginInput from "./OriginInput";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
 import { setOrigin } from "../slices/navigationSlice";
-import Destination from "./Destination";
+import DestinationInput from "./DestinationInput";
 
 const Booking = () => {
   const origin = useSelector((state: RootState) => state.navigation.origin);
   const destination = useSelector(
     (state: RootState) => state.navigation.destination
   );
-  const seoul = useMemo(() => ({ lat: 37.5666791, lng: 126.9782914 }), []);
+  const center = useSelector((state: RootState) => state.navigation.center);
+  const zoom = useSelector((state: RootState) => state.navigation.zoom);
 
   const dispatch = useDispatch();
-
-  let zoom;
-  let center;
-  if (!origin) {
-    center = seoul;
-    zoom = 10;
-  } else if (origin && !destination) {
-    center = origin;
-    zoom = 16;
-  } else if (destination) {
-    center = destination;
-    zoom = 16;
-  }
 
   return (
     <div className="h-screen sm:max-w-xl md:max-w-3xl mx-auto pt-3">
       <div className="flex flex-col items-center gap-y-2">
         <div className="w-full space-y-2 m px-2">
-          <Origin />
-          <Destination />
+          <OriginInput />
+          <DestinationInput />
         </div>
         <button
           // onClick={}
-          className="w-1/3 h-12 text-xl rounded-full bg-black text-white font-bold hover:opacity-80"
+          className="disabled:hover:cursor-not-allowed disabled:opacity-20 w-1/3 h-12 text-xl rounded-full bg-black text-white font-bold hover:opacity-80"
+          disabled={!origin || !destination}
         >
           Done
         </button>
@@ -48,7 +37,13 @@ const Booking = () => {
         center={center}
         zoom={zoom}
         onClick={(mapsMouseEvent) => {
-          dispatch(setOrigin(mapsMouseEvent.latLng));
+          dispatch(
+            setOrigin(
+              JSON.parse(
+                JSON.stringify(mapsMouseEvent.latLng?.toJSON(), null, 2)
+              )
+            )
+          );
         }}
       >
         {origin && <MarkerF position={origin!} />}
@@ -57,4 +52,5 @@ const Booking = () => {
     </div>
   );
 };
+
 export default Booking;
