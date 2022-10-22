@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
@@ -10,13 +10,18 @@ import {
   ComboboxList,
   ComboboxOption,
 } from "@reach/combobox";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setCenter, setDestination, setZoom } from "../slices/navigationSlice";
-import { RootState } from "../store";
 
-const DestinationInput = () => {
+const DestinationInput = ({
+  destinationAddress,
+  setDestinationAddress,
+}: {
+  destinationAddress: string;
+  setDestinationAddress: React.Dispatch<React.SetStateAction<string>>;
+}) => {
   const dispatch = useDispatch();
-  const origin = useSelector((state: RootState) => state.navigation.origin);
+
   const {
     value,
     suggestions: { status, data },
@@ -37,13 +42,25 @@ const DestinationInput = () => {
     dispatch(setZoom(16));
   };
 
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value);
+    setDestinationAddress(e.target.value);
+  };
+
+  useEffect(() => {
+    if (destinationAddress) {
+      setValue(destinationAddress, false);
+      clearSuggestions();
+    }
+  }, [destinationAddress]);
+
   return (
     <div>
       <Combobox onSelect={handleSelect}>
         <ComboboxInput
           value={value}
-          onChange={(e) => setValue(e.target.value)}
-          disabled={!origin}
+          onChange={onChange}
+          // disabled={!origin}
           className="bg-gray-200 w-full rounded-md h-14 px-2 outline-none text-2xl font-bold"
           placeholder="Where to?"
         />

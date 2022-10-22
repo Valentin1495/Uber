@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
@@ -13,9 +13,14 @@ import {
 import { useDispatch } from "react-redux";
 import { setCenter, setOrigin, setZoom } from "../slices/navigationSlice";
 
-const OriginInput = () => {
+const OriginInput = ({
+  originAddress,
+  setOriginAddress,
+}: {
+  originAddress: string;
+  setOriginAddress: React.Dispatch<React.SetStateAction<string>>;
+}) => {
   const dispatch = useDispatch();
-
   const {
     ready,
     value,
@@ -23,6 +28,11 @@ const OriginInput = () => {
     setValue,
     clearSuggestions,
   } = usePlacesAutocomplete();
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value);
+    setOriginAddress(e.target.value);
+  };
 
   const handleSelect = async (address: string) => {
     setValue(address, false);
@@ -37,12 +47,20 @@ const OriginInput = () => {
     dispatch(setZoom(16));
   };
 
+  useEffect(() => {
+    if (originAddress) {
+      setValue(originAddress, false);
+      clearSuggestions();
+    }
+  }, [originAddress]);
+
   return (
     <div className="w-full">
       <Combobox onSelect={handleSelect}>
         <ComboboxInput
+          // ref={inputRef}
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={onChange}
           disabled={!ready}
           className="bg-gray-200 w-full rounded-md h-14 px-2 outline-none text-2xl font-bold"
           placeholder="Where from?"

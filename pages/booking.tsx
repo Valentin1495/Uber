@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Script from "next/script";
-import Booking from "../components/Booking";
+import Directions from "../components/Directions";
 
-const Trips = () => {
+const Booking = () => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
@@ -15,9 +15,9 @@ const Trips = () => {
         }}
       />
 
-      {isLoaded && <Booking />}
+      {isLoaded && <Directions />}
     </div>
   );
 };
 
-export default Trips;
+export default Booking;
