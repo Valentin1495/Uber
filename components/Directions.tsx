@@ -26,35 +26,32 @@ const Directions = () => {
 
   const geocodeLatLng = (mapsMouseEvent: google.maps.MapMouseEvent) => {
     const geocoder = new google.maps.Geocoder();
-    const latLngLiteral = JSON.parse(
+    const coordinate = JSON.parse(
       JSON.stringify(mapsMouseEvent.latLng?.toJSON(), null, 2)
     );
-    geocoder.geocode({ location: latLngLiteral }).then((response) => {
+    geocoder.geocode({ location: coordinate }).then((response) => {
       if (response.results[0]) {
         if (!originAddress && !destinationAddress) {
-          dispatch(setOrigin(latLngLiteral));
-          dispatch(setCenter(latLngLiteral));
+          dispatch(setOrigin(coordinate));
+          dispatch(setCenter(coordinate));
           dispatch(setZoom(16));
 
           setOriginAddress(response.results[0].formatted_address);
         }
-        if (!originAddress && destinationAddress)
-          dispatch(setOrigin(latLngLiteral));
-        dispatch(setCenter(latLngLiteral));
-        dispatch(setZoom(16));
+        if (!originAddress && destinationAddress) {
+          dispatch(setOrigin(coordinate));
+          dispatch(setCenter(coordinate));
+          dispatch(setZoom(16));
 
-        setOriginAddress(response.results[0].formatted_address);
+          setOriginAddress(response.results[0].formatted_address);
+        }
 
         if (!destinationAddress && originAddress) {
-          dispatch(setDestination(latLngLiteral));
-          dispatch(setCenter(latLngLiteral));
+          dispatch(setDestination(coordinate));
+          dispatch(setCenter(coordinate));
           dispatch(setZoom(16));
 
           setDestinationAddress(response.results[0].formatted_address);
-        }
-        if (originAddress && destinationAddress) {
-          setOriginAddress(originAddress);
-          setDestination(destinationAddress);
         }
       }
     });
