@@ -58,7 +58,6 @@ const OriginInput = ({
     <div className="w-full">
       <Combobox onSelect={handleSelect}>
         <ComboboxInput
-          // ref={inputRef}
           value={value}
           onChange={onChange}
           disabled={!ready}

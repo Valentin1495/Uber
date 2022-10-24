@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { GoogleMap, MarkerF } from "@react-google-maps/api";
+import { DirectionsRenderer, GoogleMap, MarkerF } from "@react-google-maps/api";
 import OriginInput from "./OriginInput";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
@@ -10,6 +10,7 @@ import {
   setZoom,
 } from "../slices/navigationSlice";
 import DestinationInput from "./DestinationInput";
+import { LatLngLiteral } from "../model";
 
 const Directions = () => {
   const origin = useSelector((state: RootState) => state.navigation.origin);
@@ -23,12 +24,13 @@ const Directions = () => {
 
   const [originAddress, setOriginAddress] = useState<string>("");
   const [destinationAddress, setDestinationAddress] = useState<string>("");
+  const [directions, setDirections] = useState<google.maps.DirectionsResult>();
 
-  const geocodeLatLng = (mapsMouseEvent: google.maps.MapMouseEvent) => {
+  const geocodeLatLng = (e: google.maps.MapMouseEvent) => {
     const geocoder = new google.maps.Geocoder();
-    const coordinate = JSON.parse(
-      JSON.stringify(mapsMouseEvent.latLng?.toJSON(), null, 2)
-    );
+
+    const coordinate = JSON.parse(JSON.stringify(e.latLng?.toJSON(), null, 2));
+
     geocoder.geocode({ location: coordinate }).then((response) => {
       if (response.results[0]) {
         if (!originAddress && !destinationAddress) {
@@ -57,6 +59,26 @@ const Directions = () => {
     });
   };
 
+  const fetchDirections = (
+    origin: LatLngLiteral,
+    destination: LatLngLiteral
+  ) => {
+    const service = new google.maps.DirectionsService();
+
+    service.route(
+      {
+        origin,
+        destination,
+        travelMode: google.maps.TravelMode.DRIVING,
+      },
+      (result, status) => {
+        if (status === "OK" && result) {
+          setDirections(result);
+        }
+      }
+    );
+  };
+
   return (
     <div className="h-screen sm:max-w-xl md:max-w-3xl mx-auto pt-3">
       <div className="flex flex-col items-center gap-y-2">
@@ -73,6 +95,7 @@ const Directions = () => {
         <button
           className="disabled:hover:cursor-not-allowed disabled:opacity-20 w-1/3 h-12 text-xl rounded-full bg-black text-white font-bold hover:opacity-80"
           disabled={!origin || !destination}
+          onClick={() => fetchDirections(origin!, destination!)}
         >
           Done
         </button>
@@ -86,6 +109,19 @@ const Directions = () => {
       >
         {origin && <MarkerF position={origin} />}
         {destination && <MarkerF position={destination} />}
+
+        {directions && (
+          <DirectionsRenderer
+            directions={directions}
+            options={{
+              polylineOptions: {
+                zIndex: 50,
+                strokeColor: "black",
+                strokeWeight: 5,
+              },
+            }}
+          />
+        )}
       </GoogleMap>
     </div>
   );

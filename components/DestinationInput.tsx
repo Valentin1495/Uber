@@ -60,7 +60,6 @@ const DestinationInput = ({
         <ComboboxInput
           value={value}
           onChange={onChange}
-          // disabled={!origin}
           className="bg-gray-200 w-full rounded-md h-14 px-2 outline-none text-2xl font-bold"
           placeholder="Where to?"
         />

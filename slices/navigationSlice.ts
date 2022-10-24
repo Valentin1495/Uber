@@ -13,7 +13,7 @@ const initialState: navigationState = {
   origin: null,
   destination: null,
   traveltimeInfo: null,
-  center: { lat: 37.5666791, lng: 126.9782914 },
+  center: { lat: 34.053691, lng: -118.242766 },
   zoom: 10,
 };
 
