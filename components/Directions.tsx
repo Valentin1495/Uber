@@ -85,6 +85,7 @@ const Directions = () => {
   const options = useMemo<MapOptions>(
     () => ({
       disableDefaultUI: true,
+      clickableIcons: false,
     }),
     []
   );
@@ -105,7 +106,7 @@ const Directions = () => {
           </div>
 
           <button
-            className="disabled:hover:cursor-not-allowed disabled:opacity-20 w-1/3 h-12 text-xl rounded-full bg-black text-white font-bold hover:opacity-80"
+            className="disabled:hover:cursor-not-allowed disabled:opacity-20 w-1/2 h-12 text-xl rounded-full bg-black text-white font-bold hover:opacity-80"
             disabled={!origin || !destination}
             onClick={() => {
               fetchDirections(origin!, destination!);

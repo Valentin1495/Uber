@@ -13,8 +13,8 @@ const initialState: navigationState = {
   origin: null,
   destination: null,
   traveltimeInfo: null,
-  center: { lat: 34.053691, lng: -118.242766 },
-  zoom: 10,
+  center: { lat: 39.3812661305678, lng: -97.9222112121185 },
+  zoom: 4,
 };
 
 export const navigationSlice = createSlice({

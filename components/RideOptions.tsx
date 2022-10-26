@@ -54,8 +54,11 @@ const RideOptions = () => {
         </div>
       ))}
 
-      <button className="bg-black w-4/5 font-bold text-lg text-white py-3 rounded-full mt-3 tablet:mt-0">
-        Choose
+      <button
+        disabled={!selected}
+        className="disabled:hover:cursor-not-allowed disabled:opacity-20 bg-black w-4/5 font-bold text-lg text-white py-3 rounded-full mt-3 tablet:mt-0"
+      >
+        Choose {selected?.title}
       </button>
     </div>
   );
