@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { DirectionsRenderer, GoogleMap, MarkerF } from "@react-google-maps/api";
 import OriginInput from "./OriginInput";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,9 +10,9 @@ import {
   setZoom,
 } from "../slices/navigationSlice";
 import DestinationInput from "./DestinationInput";
-import { DirectionsResult, LatLngLiteral } from "../model";
+import { DirectionsResult, LatLngLiteral, MapOptions } from "../model";
 import { useRouter } from "next/router";
-import Options from "./Options";
+import RideOptions from "./RideOptions";
 
 const Directions = () => {
   const router = useRouter();
@@ -82,41 +82,46 @@ const Directions = () => {
     );
   };
 
+  const options = useMemo<MapOptions>(
+    () => ({
+      disableDefaultUI: true,
+    }),
+    []
+  );
+
   return (
-    <div className="h-screen sm:max-w-xl md:max-w-3xl mx-auto pt-3">
-      <div className="flex flex-col items-center gap-y-2">
-        {directions ? (
-          <Options />
-        ) : (
-          <>
-            <div className="w-full space-y-2 m px-2">
-              <OriginInput
-                originAddress={originAddress}
-                setOriginAddress={setOriginAddress}
-              />
-              <DestinationInput
-                destinationAddress={destinationAddress}
-                setDestinationAddress={setDestinationAddress}
-              />
-            </div>
+    <div className={`${directions ? "py-" : "py-3"} h-screen mx-auto max-w-lg`}>
+      {!directions && (
+        <div className="flex flex-col items-center gap-y-2">
+          <div className="w-full space-y-2 px-2">
+            <OriginInput
+              originAddress={originAddress}
+              setOriginAddress={setOriginAddress}
+            />
+            <DestinationInput
+              destinationAddress={destinationAddress}
+              setDestinationAddress={setDestinationAddress}
+            />
+          </div>
 
-            <button
-              className="disabled:hover:cursor-not-allowed disabled:opacity-20 w-1/3 h-12 text-xl rounded-full bg-black text-white font-bold hover:opacity-80"
-              disabled={!origin || !destination}
-              onClick={() => {
-                fetchDirections(origin!, destination!);
-              }}
-            >
-              Done
-            </button>
-          </>
-        )}
-      </div>
-
+          <button
+            className="disabled:hover:cursor-not-allowed disabled:opacity-20 w-1/3 h-12 text-xl rounded-full bg-black text-white font-bold hover:opacity-80"
+            disabled={!origin || !destination}
+            onClick={() => {
+              fetchDirections(origin!, destination!);
+            }}
+          >
+            Done
+          </button>
+        </div>
+      )}
       <GoogleMap
-        mapContainerClassName="h-[calc(100%-184px)] sm:h-[calc(100%-196px)]  w-full mt-2"
+        mapContainerClassName={`${
+          directions ? "h-1/2 mt-0" : "h-[calc(100%-172px)] mt-2"
+        }  w-full`}
         center={center}
         zoom={zoom}
+        options={options}
         onClick={geocodeLatLng}
       >
         {!directions && origin && <MarkerF position={origin} />}
@@ -135,6 +140,7 @@ const Directions = () => {
           />
         )}
       </GoogleMap>
+      {directions && <RideOptions />}
     </div>
   );
 };

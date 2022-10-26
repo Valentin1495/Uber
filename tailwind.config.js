@@ -6,6 +6,9 @@ module.exports = {
   ],
   theme: {
     extend: {},
+    screens: {
+      tablet: "480px",
+    },
   },
   plugins: [],
 };
