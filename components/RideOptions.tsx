@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import RideOption from "./RideOption";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
+import { useRouter } from "next/router";
 
 interface Option {
   id: string;
@@ -31,10 +33,19 @@ const options = [
 
 const RideOptions = () => {
   const [selected, setSelected] = useState<Option>();
+  const router = useRouter();
 
   return (
-    <div className="py-7 tablet:py-3.5 flex flex-col items-center gap-y-3 tablet:gap-y-1">
-      <p className="text-2xl italic">Select a Ride</p>
+    <div className="py-7 tablet:py-3.5 flex flex-col items-center justify-center gap-y-3 tablet:gap-y-1">
+      <div className="flex items-center w-full">
+        <button
+          className="hover:opacity-50"
+          onClick={() => router.push("/booking")}
+        >
+          <ChevronLeftIcon className="h-8 w-8" />
+        </button>
+        <p className="text-2xl italic mx-auto">Select a Ride</p>
+      </div>
 
       {options.map((option) => (
         <div
@@ -56,7 +67,9 @@ const RideOptions = () => {
 
       <button
         disabled={!selected}
-        className="disabled:hover:cursor-not-allowed disabled:opacity-20 bg-black w-4/5 font-bold text-lg text-white py-3 rounded-full mt-3 tablet:mt-0"
+        className="disabled:hover:cursor-not-allowed disabled:opacity-20
+                 bg-black w-1/2 tablet:w-3/5 md:w-4/5 font-bold text-lg
+                 text-white py-3 rounded-full mt-3 tablet:mt-0"
       >
         Choose {selected?.title}
       </button>

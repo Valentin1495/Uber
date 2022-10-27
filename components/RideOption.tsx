@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 interface Option {
   id: string;
@@ -20,13 +20,8 @@ const RideOption = ({
   multiplier: number;
   selected: Option;
 }) => {
-  //   const [selected, setSelected] = useState("");
-
   return (
     <div
-      //   onClick={() => {
-      //     setSelected(id);
-      //   }}
       className={`${
         selected?.id === id && "bg-gray-200"
       } flex items-center justify-evenly`}
