@@ -13,7 +13,7 @@ import DestinationInput from "./DestinationInput";
 import { MapOptions } from "../model";
 import { useRouter } from "next/router";
 
-const Directions = () => {
+const Input = () => {
   const router = useRouter();
   const origin = useSelector((state: RootState) => state.navigation.origin);
   const destination = useSelector(
@@ -83,7 +83,8 @@ const Directions = () => {
         </div>
 
         <button
-          className="disabled:hover:cursor-not-allowed disabled:opacity-20 w-1/2 h-12 text-xl rounded-full bg-black text-white font-bold hover:opacity-80"
+          className="disabled:hover:cursor-not-allowed disabled:opacity-20 
+                     w-1/2 h-12 text-xl rounded-full bg-black text-white font-bold hover:opacity-80"
           disabled={!origin || !destination}
           onClick={() => router.push("/options")}
         >
@@ -105,4 +106,4 @@ const Directions = () => {
   );
 };
 
-export default Directions;
+export default Input;

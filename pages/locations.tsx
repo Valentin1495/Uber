@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Script from "next/script";
-import Directions from "../components/Directions";
+import Input from "../components/Input";
 
-const Booking = () => {
+const Locations = () => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
@@ -15,9 +15,9 @@ const Booking = () => {
         }}
       />
 
-      {isLoaded && <Directions />}
+      {isLoaded && <Input />}
     </div>
   );
 };
 
-export default Booking;
+export default Locations;

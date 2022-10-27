@@ -40,7 +40,7 @@ const RideOptions = () => {
       <div className="flex items-center w-full">
         <button
           className="hover:opacity-50"
-          onClick={() => router.push("/booking")}
+          onClick={() => router.push("/locations")}
         >
           <ChevronLeftIcon className="h-8 w-8" />
         </button>
