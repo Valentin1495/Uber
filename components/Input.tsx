@@ -1,13 +1,14 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { GoogleMap, MarkerF } from "@react-google-maps/api";
 import OriginInput from "./OriginInput";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
 import {
   setCenter,
+  setCurrentLocation,
   setDestination,
   setOrigin,
-  setZoom,
+  // setZoom,
 } from "../slices/navigationSlice";
 import DestinationInput from "./DestinationInput";
 import { MapOptions } from "../model";
@@ -15,12 +16,16 @@ import { useRouter } from "next/router";
 
 const Input = () => {
   const router = useRouter();
+
+  const currentLocation = useSelector(
+    (state: RootState) => state.navigation.currentLocation
+  );
   const origin = useSelector((state: RootState) => state.navigation.origin);
   const destination = useSelector(
     (state: RootState) => state.navigation.destination
   );
   const center = useSelector((state: RootState) => state.navigation.center);
-  const zoom = useSelector((state: RootState) => state.navigation.zoom);
+  // const zoom = useSelector((state: RootState) => state.navigation.zoom);
 
   const dispatch = useDispatch();
 
@@ -37,14 +42,12 @@ const Input = () => {
         if (!originAddress && !destinationAddress) {
           dispatch(setOrigin(coordinate));
           dispatch(setCenter(coordinate));
-          dispatch(setZoom(16));
 
           setOriginAddress(response.results[0].formatted_address);
         }
         if (!originAddress && destinationAddress) {
           dispatch(setOrigin(coordinate));
           dispatch(setCenter(coordinate));
-          dispatch(setZoom(16));
 
           setOriginAddress(response.results[0].formatted_address);
         }
@@ -52,7 +55,6 @@ const Input = () => {
         if (!destinationAddress && originAddress) {
           dispatch(setDestination(coordinate));
           dispatch(setCenter(coordinate));
-          dispatch(setZoom(16));
 
           setDestinationAddress(response.results[0].formatted_address);
         }
@@ -68,9 +70,28 @@ const Input = () => {
     []
   );
 
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position: GeolocationPosition) => {
+          const pos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+
+          dispatch(setCenter(pos));
+          dispatch(setCurrentLocation(pos));
+        }
+      );
+    }
+  }, []);
+
   return (
-    <div className="py-3 h-screen mx-auto max-w-lg">
-      <div className="flex flex-col items-center gap-y-2">
+    <div className="h-screen relative">
+      <div
+        className="top-3 w-full sm:w-1/2 sm:left-1/2 sm:-translate-x-1/2 
+                      flex flex-col items-center gap-y-2 absolute z-40"
+      >
         <div className="w-full space-y-2 px-2">
           <OriginInput
             originAddress={originAddress}
@@ -93,14 +114,15 @@ const Input = () => {
       </div>
 
       <GoogleMap
-        mapContainerClassName="h-[calc(100%-172px)] mt-2 w-full"
+        mapContainerClassName="h-full"
         center={center}
-        zoom={zoom}
+        zoom={16}
         options={options}
         onClick={geocodeLatLng}
       >
         {origin && <MarkerF position={origin} />}
         {destination && <MarkerF position={destination} />}
+        {currentLocation && <MarkerF position={currentLocation} />}
       </GoogleMap>
     </div>
   );

@@ -11,7 +11,7 @@ import {
   ComboboxOption,
 } from "@reach/combobox";
 import { useDispatch } from "react-redux";
-import { setCenter, setDestination, setZoom } from "../slices/navigationSlice";
+import { setCenter, setDestination } from "../slices/navigationSlice";
 
 const DestinationInput = ({
   destinationAddress,
@@ -39,7 +39,6 @@ const DestinationInput = ({
 
     dispatch(setDestination({ lat, lng }));
     dispatch(setCenter({ lat, lng }));
-    dispatch(setZoom(16));
   };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,6 +50,8 @@ const DestinationInput = ({
     if (destinationAddress) {
       setValue(destinationAddress, false);
       clearSuggestions();
+    } else {
+      dispatch(setDestination(null));
     }
   }, [destinationAddress]);
 

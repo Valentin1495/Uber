@@ -2,25 +2,30 @@ import { createSlice } from "@reduxjs/toolkit";
 import { LatLngLiteral } from "../model";
 
 export interface navigationState {
+  currentLocation: LatLngLiteral | null;
   origin: LatLngLiteral | null;
   destination: LatLngLiteral | null;
   traveltimeInfo: number | null;
-  center: LatLngLiteral;
+  center: LatLngLiteral | undefined;
   zoom: number;
 }
 
 const initialState: navigationState = {
+  currentLocation: null,
   origin: null,
   destination: null,
   traveltimeInfo: null,
-  center: { lat: 39.3812661305678, lng: -97.9222112121185 },
-  zoom: 3,
+  center: undefined,
+  zoom: 16,
 };
 
 export const navigationSlice = createSlice({
   name: "navigation",
   initialState,
   reducers: {
+    setCurrentLocation: (state, action) => {
+      state.currentLocation = action.payload;
+    },
     setOrigin: (state, action) => {
       state.origin = action.payload;
     },
@@ -41,6 +46,7 @@ export const navigationSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const {
+  setCurrentLocation,
   setOrigin,
   setDestination,
   setTraveltimeInfo,

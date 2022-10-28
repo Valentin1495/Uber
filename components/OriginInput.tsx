@@ -11,7 +11,7 @@ import {
   ComboboxOption,
 } from "@reach/combobox";
 import { useDispatch } from "react-redux";
-import { setCenter, setOrigin, setZoom } from "../slices/navigationSlice";
+import { setCenter, setOrigin } from "../slices/navigationSlice";
 
 const OriginInput = ({
   originAddress,
@@ -44,13 +44,14 @@ const OriginInput = ({
 
     dispatch(setOrigin({ lat, lng }));
     dispatch(setCenter({ lat, lng }));
-    dispatch(setZoom(16));
   };
 
   useEffect(() => {
     if (originAddress) {
       setValue(originAddress, false);
       clearSuggestions();
+    } else {
+      dispatch(setOrigin(null));
     }
   }, [originAddress]);
 
@@ -65,7 +66,7 @@ const OriginInput = ({
           placeholder="Where from?"
           autoFocus
         />
-        <ComboboxPopover className="bg-white/60">
+        <ComboboxPopover className="bg-white/60 z-50">
           <ComboboxList>
             {status === "OK" &&
               data.map(({ place_id, description }) => (

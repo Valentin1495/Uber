@@ -3,12 +3,12 @@ import { DirectionsRenderer, GoogleMap } from "@react-google-maps/api";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
 import { DirectionsResult, LatLngLiteral, MapOptions } from "../model";
-import RideOptions from "../components/RideOptions";
+// import RideOptions from "../components/RideOptions";
 import {
   setCenter,
   setDestination,
   setOrigin,
-  setZoom,
+  // setZoom,
 } from "../slices/navigationSlice";
 
 const Options = () => {
@@ -17,7 +17,7 @@ const Options = () => {
     (state: RootState) => state.navigation.destination
   );
   const center = useSelector((state: RootState) => state.navigation.center);
-  const zoom = useSelector((state: RootState) => state.navigation.zoom);
+  // const zoom = useSelector((state: RootState) => state.navigation.zoom);
 
   const dispatch = useDispatch();
   const [directions, setDirections] = useState<DirectionsResult>();
@@ -43,13 +43,8 @@ const Options = () => {
 
     dispatch(setOrigin(null));
     dispatch(setDestination(null));
-    dispatch(setZoom(4));
-    dispatch(setCenter({ lat: 39.3812661305678, lng: -97.9222112121185 }));
+    dispatch(setCenter(undefined));
   };
-
-  useEffect(() => {
-    fetchDirections(origin!, destination!);
-  }, [origin, destination]);
 
   const options = useMemo<MapOptions>(
     () => ({
@@ -59,12 +54,16 @@ const Options = () => {
     []
   );
 
+  useEffect(() => {
+    fetchDirections(origin!, destination!);
+  }, [origin, destination]);
+
   return (
-    <div className="h-screen mx-auto max-w-lg">
+    <div className="h-screen">
       <GoogleMap
-        mapContainerClassName="h-1/2 mt-0 w-full"
+        mapContainerClassName="h-full"
         center={center}
-        zoom={zoom}
+        zoom={16}
         options={options}
       >
         {directions && (
@@ -81,7 +80,7 @@ const Options = () => {
         )}
       </GoogleMap>
 
-      <RideOptions />
+      {/* <RideOptions /> */}
     </div>
   );
 };
