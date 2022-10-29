@@ -107,23 +107,29 @@ const Input = () => {
           className="disabled:hover:cursor-not-allowed disabled:opacity-20 
                      w-1/2 h-12 text-xl rounded-full bg-black text-white font-bold hover:opacity-80"
           disabled={!origin || !destination}
-          onClick={() => router.push("/options")}
+          onClick={() => router.push("/directions")}
         >
           Done
         </button>
       </div>
 
-      <GoogleMap
-        mapContainerClassName="h-full"
-        center={center}
-        zoom={16}
-        options={options}
-        onClick={geocodeLatLng}
-      >
-        {origin && <MarkerF position={origin} />}
-        {destination && <MarkerF position={destination} />}
-        {currentLocation && <MarkerF position={currentLocation} />}
-      </GoogleMap>
+      {center ? (
+        <GoogleMap
+          mapContainerClassName="h-full"
+          center={center}
+          zoom={16}
+          options={options}
+          onClick={geocodeLatLng}
+        >
+          {origin && <MarkerF position={origin} />}
+          {destination && <MarkerF position={destination} />}
+          {currentLocation && <MarkerF position={currentLocation} />}
+        </GoogleMap>
+      ) : (
+        <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-bold text-3xl lg:text-5xl">
+          Loading a Map...
+        </p>
+      )}
     </div>
   );
 };

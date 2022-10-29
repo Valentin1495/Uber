@@ -7,7 +7,6 @@ export interface navigationState {
   destination: LatLngLiteral | null;
   traveltimeInfo: number | null;
   center: LatLngLiteral | undefined;
-  zoom: number;
 }
 
 const initialState: navigationState = {
@@ -16,7 +15,6 @@ const initialState: navigationState = {
   destination: null,
   traveltimeInfo: null,
   center: undefined,
-  zoom: 16,
 };
 
 export const navigationSlice = createSlice({
@@ -38,9 +36,6 @@ export const navigationSlice = createSlice({
     setCenter: (state, action) => {
       state.center = action.payload;
     },
-    setZoom: (state, action) => {
-      state.zoom = action.payload;
-    },
   },
 });
 
@@ -51,7 +46,6 @@ export const {
   setDestination,
   setTraveltimeInfo,
   setCenter,
-  setZoom,
 } = navigationSlice.actions;
 
 export default navigationSlice.reducer;
