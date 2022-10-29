@@ -83,9 +83,9 @@ const Directions = () => {
 
       <button
         onClick={() => router.push("/locations")}
-        className="absolute top-5 left-5 bg-white rounded-full p-1.5 md:p-3 hover:opacity-80 shadow-xl"
+        className="absolute top-5 left-5 bg-white rounded-full p-1.5 lg:p-3 hover:opacity-80 shadow-xl"
       >
-        <ArrowLeftIcon className="h-8 md:w-10 w-8 md:h-10" />
+        <ArrowLeftIcon className="h-8 lg:w-10 w-8 lg:h-10" />
       </button>
 
       <button

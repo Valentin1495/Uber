@@ -37,8 +37,8 @@ const RideOptions = () => {
 
   return (
     <div className="h-screen flex items-center justify-center">
-      <div className="w-full md:w-1/3 bg-gray-100 flex flex-col items-center justify-center gap-y-3">
-        <div className="flex items-center w-full">
+      <div className="py-5 rounded-xl w-4/5 md:w-1/2 lg:w-1/3 bg-gray-100 flex flex-col items-center justify-center gap-y-3">
+        <div className="flex items-center w-full px-3">
           <button
             className="hover:opacity-50"
             onClick={() => router.push("/locations")}
@@ -67,9 +67,10 @@ const RideOptions = () => {
         ))}
 
         <button
+          onClick={() => router.push("/checkout")}
           disabled={!selected}
           className="disabled:hover:cursor-not-allowed disabled:opacity-20
-                 bg-black w-1/2 md:w-1/3 font-bold text-lg
+                 bg-black w-1/2 font-bold md:text-lg
                  text-white py-3 rounded-full mt-3"
         >
           Choose {selected?.title}
