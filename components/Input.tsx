@@ -8,7 +8,6 @@ import {
   setCurrentLocation,
   setDestination,
   setOrigin,
-  // setZoom,
 } from "../slices/navigationSlice";
 import DestinationInput from "./DestinationInput";
 import { MapOptions } from "../model";
@@ -25,7 +24,6 @@ const Input = () => {
     (state: RootState) => state.navigation.destination
   );
   const center = useSelector((state: RootState) => state.navigation.center);
-  // const zoom = useSelector((state: RootState) => state.navigation.zoom);
 
   const dispatch = useDispatch();
 
