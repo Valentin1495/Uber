@@ -1,133 +1,70 @@
-import React, { useState, useMemo, useEffect } from "react";
-import { GoogleMap, GoogleMapProps, MarkerF } from "@react-google-maps/api";
-import OriginInput from "./OriginInput";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../store";
 import {
-  setCenter,
-  setCurrentLocation,
-  setDestination,
-  setOrigin,
-} from "../slices/navigationSlice";
-import DestinationInput from "./DestinationInput";
-import { MapOptions } from "../model";
-import { useRouter } from "next/router";
+  Combobox,
+  ComboboxInput,
+  ComboboxList,
+  ComboboxOption,
+  ComboboxPopover,
+} from "@reach/combobox";
+import React from "react";
+import { useDispatch } from "react-redux";
+import usePlacesAutocomplete, {
+  getGeocode,
+  getLatLng,
+} from "use-places-autocomplete";
+import { setCenter } from "../slices/navigationSlice";
 
 const Input = () => {
-  const router = useRouter();
-
-  const currentLocation = useSelector(
-    (state: RootState) => state.navigation.currentLocation
-  );
-  const origin = useSelector((state: RootState) => state.navigation.origin);
-  const destination = useSelector(
-    (state: RootState) => state.navigation.destination
-  );
-  const center = useSelector((state: RootState) => state.navigation.center);
-
   const dispatch = useDispatch();
 
-  const [originAddress, setOriginAddress] = useState<string>("");
-  const [destinationAddress, setDestinationAddress] = useState<string>("");
+  const {
+    ready,
+    value,
+    suggestions: { status, data },
+    setValue,
+    clearSuggestions,
+  } = usePlacesAutocomplete();
 
-  const geocodeLatLng = (e: google.maps.MapMouseEvent) => {
-    const geocoder = new google.maps.Geocoder();
-
-    const coordinate = JSON.parse(JSON.stringify(e.latLng?.toJSON(), null, 2));
-
-    geocoder.geocode({ location: coordinate }).then((response) => {
-      if (response.results[0]) {
-        if (!originAddress && !destinationAddress) {
-          dispatch(setOrigin(coordinate));
-          dispatch(setCenter(coordinate));
-
-          setOriginAddress(response.results[0].formatted_address);
-        }
-        if (!originAddress && destinationAddress) {
-          dispatch(setOrigin(coordinate));
-          dispatch(setCenter(coordinate));
-
-          setOriginAddress(response.results[0].formatted_address);
-        }
-
-        if (!destinationAddress && originAddress) {
-          dispatch(setDestination(coordinate));
-          dispatch(setCenter(coordinate));
-
-          setDestinationAddress(response.results[0].formatted_address);
-        }
-      }
-    });
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value);
   };
 
-  const options = useMemo<MapOptions>(
-    () => ({
-      disableDefaultUI: true,
-      clickableIcons: false,
-    }),
-    []
-  );
+  const handleSelect = async (address: string) => {
+    setValue(address, false);
+    clearSuggestions();
 
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position: GeolocationPosition) => {
-          const pos = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
+    const results = await getGeocode({ address });
 
-          dispatch(setCenter(pos));
-          dispatch(setCurrentLocation(pos));
-        }
-      );
-    }
-  }, []);
+    const { lat, lng } = getLatLng(results[0]);
 
+    dispatch(setCenter({ lat, lng }));
+  };
   return (
-    <div className="h-screen relative">
-      <div
-        className="top-3 w-full sm:w-1/2 sm:left-1/2 sm:-translate-x-1/2 
-                      flex flex-col items-center gap-y-2 absolute z-40"
-      >
-        <div className="w-full space-y-2 px-2">
-          <OriginInput
-            originAddress={originAddress}
-            setOriginAddress={setOriginAddress}
-          />
-          <DestinationInput
-            destinationAddress={destinationAddress}
-            setDestinationAddress={setDestinationAddress}
-          />
-        </div>
-
-        <button
-          className="disabled:hover:cursor-not-allowed disabled:opacity-20 
-                     w-1/2 h-12 text-xl rounded-full bg-black text-white font-bold hover:opacity-80"
-          disabled={!origin || !destination}
-          onClick={() => router.push("/directions")}
-        >
-          Done
-        </button>
-      </div>
-
-      {center ? (
-        <GoogleMap
-          mapContainerClassName="h-full"
-          center={center}
-          zoom={16}
-          options={options}
-          onClick={geocodeLatLng}
-        >
-          {origin && <MarkerF position={origin} />}
-          {destination && <MarkerF position={destination} />}
-          {currentLocation && <MarkerF position={currentLocation} />}
-        </GoogleMap>
-      ) : (
-        <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-bold text-3xl lg:text-5xl">
-          Loading a Map...
-        </p>
-      )}
+    <div
+      className="top-3 w-full sm:w-1/2 sm:left-1/2 sm:-translate-x-1/2 
+                absolute z-40 px-2"
+    >
+      <Combobox onSelect={handleSelect}>
+        <ComboboxInput
+          value={value}
+          onChange={onChange}
+          disabled={!ready}
+          className="bg-gray-200 w-full rounded-md h-14 px-2 outline-none text-2xl font-bold"
+          placeholder="Find a Place"
+          autoFocus
+        />
+        <ComboboxPopover className="bg-white/60 z-50">
+          <ComboboxList>
+            {status === "OK" &&
+              data.map(({ place_id, description }) => (
+                <ComboboxOption
+                  key={place_id}
+                  value={description}
+                  className="hover:cursor-pointer hover:bg-gray-100 p-2"
+                />
+              ))}
+          </ComboboxList>
+        </ComboboxPopover>
+      </Combobox>
     </div>
   );
 };
