@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
+import { FaCar, FaMapMarkedAlt } from "react-icons/fa";
 
 const Home: NextPage = () => {
   return (
@@ -16,18 +17,23 @@ const Home: NextPage = () => {
         alt="Uber Logo"
         className="h-24 w-24 object-contain"
       />
-      <div className="flex flex-col items-center gap-y-3">
+      <div className="flex gap-x-3 items-center">
         <Link href="/locations">
           <button
-            className="bg-gray-200 rounded-md w-40 flex flex-col 
-          items-center pb-5"
+            className="bg-gray-200 rounded-md flex flex-col 
+          items-center py-3 space-y-1.5 w-44"
           >
-            <img
-              src="https://links.papareact.com/3pn"
-              alt="car"
-              className="h-24 w-24 border ml-2.5 object-contain"
-            />
-            <p className="font-bold text-lg">Book a Ride</p>
+            <FaCar className="h-20 w-20" />
+            <p className="font-bold text-2xl">Book a Ride</p>
+          </button>
+        </Link>
+        <Link href="/places">
+          <button
+            className="bg-gray-200 rounded-md flex flex-col 
+          items-center py-3 space-y-1.5 w-44"
+          >
+            <FaMapMarkedAlt className="h-20 w-20" />
+            <p className="font-bold text-2xl">Find a Place</p>
           </button>
         </Link>
       </div>

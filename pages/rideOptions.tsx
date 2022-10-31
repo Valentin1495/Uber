@@ -63,18 +63,15 @@ const RideOptions = () => {
 
         <div className="mt-3 flex flex-col items-center justify-center gap-y-3">
           {!distance || !duration ? null : (
-            <p className="text-lg break-all px-5">
-              The destination is <span>{distance}</span> away from the starting
-              point. <br />
-              That would take <span>{duration}</span>.
+            <p className="italic pb-3 text-lg break-all px-5 border-b border-gray-400 w-full text-center">
+              <h2>Distance - {distance}</h2>
+              <h2>Travel Time - {duration}</h2>
             </p>
           )}
 
-          <p className="text-2xl italic">Select a Ride</p>
-
           {options.map((option) => (
             <div
-              className="w-full hover:cursor-pointer hover:opacity-50"
+              className="w-full hover:cursor-pointer hover:opacity-50 -mt-3"
               onClick={() => {
                 setSelected(option);
               }}

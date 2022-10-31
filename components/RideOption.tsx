@@ -36,9 +36,9 @@ const RideOption = ({
     >
       <img src={image} alt="Ride Option" className="h-20 w-20 object-contain" />
       <div>
-        <span className="text-xl font-bold">{title}</span> <br />
+        <span className="text-xl">{title}</span> <br />
       </div>
-      <span className="text-lg">
+      <span className="text-lg font-bold">
         $
         {new Intl.NumberFormat().format(
           (durationValue! * SURGE_CHARGE_RATE * multiplier) / 100

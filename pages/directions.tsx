@@ -84,7 +84,7 @@ const Directions = () => {
 
       <div className="text-center mt-4 sm:mt-3.5">
         <button
-          onClick={() => router.push("/rideOptions")}
+          onClick={() => router.push("/rideoptions")}
           className="w-1/2 md:w-1/3 h-12 text-xl rounded-full bg-black
                    text-white font-bold hover:opacity-80"
         >

@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { GoogleMap, MarkerF } from "@react-google-maps/api";
+import { GoogleMap, GoogleMapProps, MarkerF } from "@react-google-maps/api";
 import OriginInput from "./OriginInput";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
