@@ -1,13 +1,20 @@
 import { GoogleMap, MarkerF } from "@react-google-maps/api";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Information from "../components/Information";
 import Input from "../components/Input";
-import { MapOptions } from "../model";
+import { LatLng, LatLngBounds, MapOptions } from "../model";
 import { setCenter, setCurrentLocation } from "../slices/navigationSlice";
 import { RootState } from "../store";
 
+interface Bounds {
+  ne: LatLng;
+  sw: LatLng;
+}
+
 const Places = () => {
+  const [bounds, setBounds] = useState<Bounds>();
+
   const dispatch = useDispatch();
 
   const center = useSelector((state: RootState) => state.navigation.center);
@@ -39,6 +46,36 @@ const Places = () => {
     }
   }, []);
 
+  // const getBounds = () => {
+  //   const latLngBounds = new window.google.maps.LatLngBounds(center);
+
+  //   const ne = JSON.parse(
+  //     JSON.stringify(latLngBounds.getNorthEast().toJSON(), null, 2)
+  //   );
+  //   const sw = JSON.parse(
+  //     JSON.stringify(latLngBounds.getSouthWest().toJSON(), null, 2)
+  //   );
+
+  //   setBounds({ ne, sw });
+
+  //   console.log(bounds);
+  // };
+
+  useEffect(() => {
+    const latLngBounds = new window.google.maps.LatLngBounds(center);
+
+    const ne = JSON.parse(
+      JSON.stringify(latLngBounds.getNorthEast().toJSON(), null, 2)
+    );
+    const sw = JSON.parse(
+      JSON.stringify(latLngBounds.getSouthWest().toJSON(), null, 2)
+    );
+
+    setBounds({ ne, sw });
+
+    console.log(bounds);
+  }, [center]);
+
   return (
     <div className="h-screen flex flex-col-reverse md:flex-row">
       <Information />
@@ -52,6 +89,7 @@ const Places = () => {
             center={center}
             zoom={16}
             options={options}
+            // onCenterChanged={getBounds}
           >
             {currentLocation && <MarkerF position={currentLocation} />}
           </GoogleMap>
