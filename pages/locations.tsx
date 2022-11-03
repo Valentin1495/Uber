@@ -33,7 +33,9 @@ const Locations = () => {
   const geocodeLatLng = (e: google.maps.MapMouseEvent) => {
     const geocoder = new google.maps.Geocoder();
 
-    const coordinate = JSON.parse(JSON.stringify(e.latLng?.toJSON(), null, 2));
+    // const coordinate = JSON.parse(JSON.stringify(e.latLng?.toJSON(), null, 2));
+
+    const coordinate = { lat: e.latLng?.lat()!, lng: e.latLng?.lng()! };
 
     geocoder.geocode({ location: coordinate }).then((response) => {
       if (response.results[0]) {

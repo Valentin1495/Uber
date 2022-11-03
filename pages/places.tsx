@@ -3,16 +3,17 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Information from "../components/Information";
 import Input from "../components/Input";
-import { LatLng, LatLngBounds, MapOptions } from "../model";
+import { LatLngLiteral, MapOptions } from "../model";
 import { setCenter, setCurrentLocation } from "../slices/navigationSlice";
 import { RootState } from "../store";
 
 interface Bounds {
-  ne: LatLng;
-  sw: LatLng;
+  ne: LatLngLiteral;
+  sw: LatLngLiteral;
 }
 
 const Places = () => {
+  const [newMap, setNewMap] = useState<google.maps.Map>();
   const [bounds, setBounds] = useState<Bounds>();
 
   const dispatch = useDispatch();
@@ -46,35 +47,31 @@ const Places = () => {
     }
   }, []);
 
-  // const getBounds = () => {
-  //   const latLngBounds = new window.google.maps.LatLngBounds(center);
+  const onLoad = (map: google.maps.Map) => {
+    setNewMap(map);
+  };
 
-  //   const ne = JSON.parse(
-  //     JSON.stringify(latLngBounds.getNorthEast().toJSON(), null, 2)
-  //   );
-  //   const sw = JSON.parse(
-  //     JSON.stringify(latLngBounds.getSouthWest().toJSON(), null, 2)
-  //   );
+  const getCenter = () => {
+    if (newMap) {
+      const latLngBounds = newMap.getBounds();
 
-  //   setBounds({ ne, sw });
+      if (latLngBounds) {
+        const ne = {
+          lat: latLngBounds.getNorthEast().lat(),
+          lng: latLngBounds.getNorthEast().lng(),
+        };
 
-  //   console.log(bounds);
-  // };
+        const sw = {
+          lat: latLngBounds.getSouthWest().lat(),
+          lng: latLngBounds.getSouthWest().lng(),
+        };
 
-  useEffect(() => {
-    const latLngBounds = new window.google.maps.LatLngBounds(center);
+        setBounds({ ne, sw });
 
-    const ne = JSON.parse(
-      JSON.stringify(latLngBounds.getNorthEast().toJSON(), null, 2)
-    );
-    const sw = JSON.parse(
-      JSON.stringify(latLngBounds.getSouthWest().toJSON(), null, 2)
-    );
-
-    setBounds({ ne, sw });
-
-    console.log(bounds);
-  }, [center]);
+        console.log(bounds);
+      }
+    }
+  };
 
   return (
     <div className="h-screen flex flex-col-reverse md:flex-row">
@@ -89,7 +86,8 @@ const Places = () => {
             center={center}
             zoom={16}
             options={options}
-            // onCenterChanged={getBounds}
+            onLoad={onLoad}
+            onCenterChanged={getCenter}
           >
             {currentLocation && <MarkerF position={currentLocation} />}
           </GoogleMap>
