@@ -27,13 +27,13 @@ const Home: NextPage = () => {
             <p className="font-bold text-2xl">Book a Ride</p>
           </button>
         </Link>
-        <Link href="/places">
+        <Link href="/search">
           <button
             className="bg-gray-200 rounded-md flex flex-col 
           items-center py-3 space-y-1.5 w-44"
           >
             <FaMapMarkedAlt className="h-20 w-20" />
-            <p className="font-bold text-2xl">Find a Place</p>
+            <p className="font-bold text-2xl">Book a Place</p>
           </button>
         </Link>
       </div>
