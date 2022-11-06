@@ -2,11 +2,12 @@ import { Popover, Tab } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { MagnifyingGlassCircleIcon } from "@heroicons/react/24/solid";
 import React from "react";
+import SearchInput from "../components/SearchInput";
 
 const Search = () => {
   return (
-    <div className="flex mt-48 max-w-xl md:max-w-3xl w-full mx-auto">
-      <Popover className="gap-y-3 flex flex-col items-center w-full">
+    <div className="flex mt-24 max-w-xl md:max-w-3xl w-full mx-auto">
+      <Popover className="gap-y-5 flex flex-col items-center w-full">
         <Popover.Button
           className="outline-none hover:shadow-lg hover:duration-500 
                     shadow-md border rounded-full border-gray-300 
@@ -19,7 +20,7 @@ const Search = () => {
           </div>
           <MagnifyingGlassCircleIcon className="h-10 w-10 text-[#FF385C] -mr-4" />
         </Popover.Button>
-        <Popover.Panel className="px-5 md:px-0 w-full">
+        <Popover.Panel className="px-5 md:px-3 lg:px-0 w-full">
           <Tab.Group>
             <Tab.List
               className="text-xl font-bold flex items-center py-2 justify-evenly
@@ -38,9 +39,9 @@ const Search = () => {
                 <h1 className="hidden sm:inline-flex">Search</h1>
               </Tab>
             </Tab.List>
-            <Tab.Panels className="">
-              <Tab.Panel className="">
-                <input type="text" placeholder="Search destinations" />
+            <Tab.Panels>
+              <Tab.Panel className="relative text-center mt-5 h-96 rounded-md bg-[#FF385C]">
+                <SearchInput />
               </Tab.Panel>
               <Tab.Panel>Content 2</Tab.Panel>
               <Tab.Panel>Content 3</Tab.Panel>
