@@ -2,6 +2,7 @@ import { Popover, Tab } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { MagnifyingGlassCircleIcon } from "@heroicons/react/24/solid";
 import React from "react";
+import DateRange from "../components/DateRange";
 import SearchInput from "../components/SearchInput";
 
 const Search = () => {
@@ -43,7 +44,9 @@ const Search = () => {
               <Tab.Panel className="relative text-center mt-5 h-96 rounded-md bg-[#FF385C]">
                 <SearchInput />
               </Tab.Panel>
-              <Tab.Panel>Content 2</Tab.Panel>
+              <Tab.Panel>
+                <DateRange />
+              </Tab.Panel>
               <Tab.Panel>Content 3</Tab.Panel>
               {/* <Tab.Panel>Content 4</Tab.Panel> */}
             </Tab.Panels>
