@@ -1,11 +1,24 @@
 import { Popover, Tab } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { MagnifyingGlassCircleIcon } from "@heroicons/react/24/solid";
+import Link from "next/link";
 import React from "react";
+import { useSelector } from "react-redux";
 import DateRange from "../components/DateRange";
+import Guests from "../components/Guests";
 import SearchInput from "../components/SearchInput";
+import { RootState } from "../store";
 
 const Search = () => {
+  const destination = useSelector(
+    (state: RootState) => state.reservation.destination
+  );
+  const startDate = useSelector(
+    (state: RootState) => state.reservation.startDate
+  );
+  const endDate = useSelector((state: RootState) => state.reservation.endDate);
+  const guests = useSelector((state: RootState) => state.reservation.guests);
+
   return (
     <div className="flex mt-24 max-w-xl md:max-w-3xl w-full mx-auto">
       <Popover className="gap-y-5 flex flex-col items-center w-full">
@@ -32,23 +45,26 @@ const Search = () => {
               <Tab className="outline-none">Check in/out</Tab>
               <span>|</span>
               <Tab className="outline-none">Who</Tab>
-              <Tab
-                className="gap-x-2 -mr-4 md:-mr-14 outline-none flex items-center bg-[#FF385C] text-white rounded-full p-2"
-                disabled
-              >
-                <MagnifyingGlassIcon className="w-8 h-8" />
-                <h1 className="hidden sm:inline-flex">Search</h1>
-              </Tab>
+              <Link href="/results">
+                <button
+                  className="gap-x-2 -mr-4 md:-mr-14 outline-none flex items-center bg-[#FF385C] text-white rounded-full p-2"
+                  disabled={!destination || !startDate || !endDate || !guests}
+                >
+                  <MagnifyingGlassIcon className="w-8 h-8" />
+                  <h1 className="hidden sm:inline-flex">Search</h1>
+                </button>
+              </Link>
             </Tab.List>
             <Tab.Panels>
-              <Tab.Panel className="relative text-center mt-5 h-96 rounded-md bg-[#FF385C]">
+              <Tab.Panel className="relative text-center mt-5 h-96 rounded-md ">
                 <SearchInput />
               </Tab.Panel>
               <Tab.Panel>
                 <DateRange />
               </Tab.Panel>
-              <Tab.Panel>Content 3</Tab.Panel>
-              {/* <Tab.Panel>Content 4</Tab.Panel> */}
+              <Tab.Panel>
+                <Guests />
+              </Tab.Panel>
             </Tab.Panels>
           </Tab.Group>
         </Popover.Panel>

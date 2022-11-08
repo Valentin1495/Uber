@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import navigationReducer from "./slices/navigationSlice";
+import reservationReducer from "./slices/reservationSlice";
 
 export const store = configureStore({
   reducer: {
     navigation: navigationReducer,
+    reservation: reservationReducer,
   },
 });
 

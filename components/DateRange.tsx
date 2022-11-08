@@ -2,19 +2,36 @@ import React, { useState } from "react";
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import { DateRangePicker, RangeKeyDict } from "react-date-range";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store";
+import { setEndDate, setStartDate } from "../slices/reservationSlice";
+import { format } from "date-fns";
 
 const DateRange = () => {
-  const [startDate, setStartDate] = useState<Date | undefined>(new Date());
-  const [endDate, setEndDate] = useState<Date | undefined>();
+  const startDate = useSelector(
+    (state: RootState) => state.reservation.startDate
+  );
+  const endDate = useSelector((state: RootState) => state.reservation.endDate);
+  const dispatch = useDispatch();
+
+  const [start, setStart] = useState<Date | undefined>(new Date());
+  const [end, setEnd] = useState<Date | undefined>();
 
   const handleSelect = (rangesByKey: RangeKeyDict) => {
-    setStartDate(rangesByKey.selection.startDate);
-    setEndDate(rangesByKey.selection.endDate);
+    setStart(rangesByKey.selection.startDate);
+    setEnd(rangesByKey.selection.endDate);
+
+    dispatch(
+      setStartDate(format(rangesByKey.selection.startDate!, "dd MMMM yyyy"))
+    );
+    dispatch(
+      setEndDate(format(rangesByKey.selection.endDate!, "dd MMMM yyyy"))
+    );
   };
 
   const selectionRange = {
-    startDate,
-    endDate,
+    startDate: start,
+    endDate: end,
     key: "selection",
   };
 
@@ -25,19 +42,18 @@ const DateRange = () => {
         rangeColors={["#FF385C"]}
         minDate={new Date()}
         onChange={handleSelect}
-        className=""
       />
-      <div className="w-full space-y-5">
+      <div className="w-full space-y-5 md:mt-3.5">
         <p className="text-center">
-          <em>Check in</em>
+          <em className="font-light">Check in</em>
           <br />
-          <span className="text-lg font-bold">{startDate?.toDateString()}</span>
+          <span className="text-lg font-bold text-[#FF385C]">{startDate}</span>
         </p>
         <p className="text-center">
-          <em>Check out</em>
+          <em className="font-light">Check out</em>
           <br />
-          <span className="text-lg font-bold">
-            {endDate ? endDate?.toDateString() : "..."}
+          <span className="text-lg font-bold text-[#FF385C]">
+            {endDate ? endDate : "..."}
           </span>
         </p>
       </div>
