@@ -12,16 +12,10 @@ const SearchInput = () => {
     setValue,
   } = usePlacesAutocomplete();
 
-  const [selected, setSelected] = useState("");
-
   const destination = useSelector(
     (state: RootState) => state.reservation.destination
   );
   const dispatch = useDispatch();
-
-  // useEffect(() => {
-  //   dispatch(setDestination(selected));
-  // }, [selected]);
 
   return (
     <div
@@ -37,7 +31,7 @@ const SearchInput = () => {
       </p>
       <div className="w-1/2 absolute left-1/2 -translate-x-1/2">
         <Combobox
-          value={selected}
+          value={""}
           onChange={(place) => dispatch(setDestination(place))}
         >
           <Combobox.Input
@@ -48,6 +42,7 @@ const SearchInput = () => {
               setValue(e.target.value);
             }}
             autoFocus
+            required
           />
           <Combobox.Options className="outline-none mt-1 max-h-60 overflow-auto rounded-md bg-white">
             {status === "OK" &&

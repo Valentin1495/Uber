@@ -4,7 +4,12 @@ import "react-date-range/dist/theme/default.css"; // theme css file
 import { DateRangePicker, RangeKeyDict } from "react-date-range";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
-import { setEndDate, setStartDate } from "../slices/reservationSlice";
+import {
+  setCheckin,
+  setCheckout,
+  setEndDate,
+  setStartDate,
+} from "../slices/reservationSlice";
 import { format } from "date-fns";
 
 const DateRange = () => {
@@ -22,11 +27,13 @@ const DateRange = () => {
     setEnd(rangesByKey.selection.endDate);
 
     dispatch(
-      setStartDate(format(rangesByKey.selection.startDate!, "dd MMMM yyyy"))
+      setStartDate(format(rangesByKey.selection.startDate!, "dd MMM yyyy"))
     );
     dispatch(
-      setEndDate(format(rangesByKey.selection.endDate!, "dd MMMM yyyy"))
+      setCheckin(format(rangesByKey.selection.startDate!, "yyyy-MM-dd"))
     );
+    dispatch(setEndDate(format(rangesByKey.selection.endDate!, "dd MMM yyyy")));
+    dispatch(setCheckout(format(rangesByKey.selection.endDate!, "yyyy-MM-dd")));
   };
 
   const selectionRange = {
