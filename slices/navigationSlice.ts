@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { DirectionsLeg, LatLngLiteral } from "../model";
+import { DirectionsLeg, LatLngLiteral } from "../typing";
 
 export interface navigationState {
   currentLocation: LatLngLiteral | null;

@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { DirectionsRenderer, GoogleMap } from "@react-google-maps/api";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
-import { DirectionsResult, LatLngLiteral, MapOptions } from "../model";
+import { DirectionsResult, LatLngLiteral, MapOptions } from "../typing";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
 import { setLeg } from "../slices/navigationSlice";

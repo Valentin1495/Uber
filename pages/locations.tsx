@@ -10,7 +10,7 @@ import {
   setOrigin,
 } from "../slices/navigationSlice";
 import DestinationInput from "../components/DestinationInput";
-import { MapOptions } from "../model";
+import { MapOptions } from "../typing";
 import { useRouter } from "next/router";
 
 const Locations = () => {
