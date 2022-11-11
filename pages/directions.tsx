@@ -5,7 +5,7 @@ import { RootState } from "../store";
 import { DirectionsResult, LatLngLiteral, MapOptions } from "../typings";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
-import { setLeg } from "../slices/navigationSlice";
+import { setDistance, setDuration } from "../slices/navigationSlice";
 
 const Directions = () => {
   const origin = useSelector((state: RootState) => state.navigation.origin);
@@ -32,7 +32,8 @@ const Directions = () => {
       (result, status) => {
         if (status === "OK" && result) {
           setDirections(result);
-          dispatch(setLeg(result.routes[0].legs[0]));
+          dispatch(setDistance(result.routes[0].legs[0].distance));
+          dispatch(setDuration(result.routes[0].legs[0].duration));
         }
       }
     );

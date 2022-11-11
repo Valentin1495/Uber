@@ -25,7 +25,7 @@ const RideOption = ({
   const SURGE_CHARGE_RATE = 1.5;
 
   const durationValue = useSelector(
-    (state: RootState) => state.navigation.leg?.duration?.value
+    (state: RootState) => state.navigation.duration.value
   );
 
   return (

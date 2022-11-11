@@ -45,7 +45,7 @@ const Search = () => {
               <Tab className="outline-none">Check in/out</Tab>
               <span>|</span>
               <Tab className="outline-none">Who</Tab>
-              <Link href="/results">
+              <Link href="/rooms">
                 <button
                   className="gap-x-2 -mr-4 md:-mr-14 outline-none flex items-center bg-[#FF385C] text-white rounded-full p-2"
                   disabled={!destination || !startDate || !endDate || !guests}

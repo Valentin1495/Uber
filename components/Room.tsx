@@ -1,8 +1,8 @@
 import React from "react";
-import { room } from "../typings";
+import { Room } from "../typings";
 
-const Room = ({ room }: { room: room }) => {
-  return <div>{room.address}</div>;
+const Room = ({ room }: { room: Room }) => {
+  return <div></div>;
 };
 
 export default Room;

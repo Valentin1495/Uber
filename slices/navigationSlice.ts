@@ -1,11 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { DirectionsLeg, LatLngLiteral } from "../typings";
+import { DirectionsLeg, Distance, Duration, LatLngLiteral } from "../typings";
 
 export interface navigationState {
   currentLocation: LatLngLiteral | null;
   origin: LatLngLiteral | null;
   destination: LatLngLiteral | null;
-  leg: DirectionsLeg | null;
+  distance: Distance;
+  duration: Duration;
   center: LatLngLiteral | undefined;
 }
 
@@ -13,7 +14,14 @@ const initialState: navigationState = {
   currentLocation: null,
   origin: null,
   destination: null,
-  leg: null,
+  distance: {
+    text: "",
+    value: 1,
+  },
+  duration: {
+    text: "",
+    value: 1,
+  },
   center: undefined,
 };
 
@@ -30,8 +38,11 @@ export const navigationSlice = createSlice({
     setDestination: (state, action) => {
       state.destination = action.payload;
     },
-    setLeg: (state, action) => {
-      state.leg = action.payload;
+    setDistance: (state, action) => {
+      state.distance = action.payload;
+    },
+    setDuration: (state, action) => {
+      state.duration = action.payload;
     },
     setCenter: (state, action) => {
       state.center = action.payload;
@@ -44,7 +55,8 @@ export const {
   setCurrentLocation,
   setOrigin,
   setDestination,
-  setLeg,
+  setDistance,
+  setDuration,
   setCenter,
 } = navigationSlice.actions;
 

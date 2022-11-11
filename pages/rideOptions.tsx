@@ -39,10 +39,10 @@ const RideOptions = () => {
   const router = useRouter();
 
   const distance = useSelector(
-    (state: RootState) => state.navigation.leg?.distance?.text
+    (state: RootState) => state.navigation.distance.text
   );
   const duration = useSelector(
-    (state: RootState) => state.navigation.leg?.duration?.text
+    (state: RootState) => state.navigation.duration.text
   );
 
   return (
@@ -64,8 +64,8 @@ const RideOptions = () => {
         <div className="mt-3 flex flex-col items-center justify-center gap-y-3">
           {!distance || !duration ? null : (
             <p className="italic pb-3 text-lg break-all px-5 border-b border-gray-400 w-full text-center">
-              <h2>Distance - {distance}</h2>
-              <h2>Travel Time - {duration}</h2>
+              Distance - {distance} <br />
+              Travel Time - {duration}
             </p>
           )}
 
@@ -75,9 +75,9 @@ const RideOptions = () => {
               onClick={() => {
                 setSelected(option);
               }}
+              key={option.id}
             >
               <RideOption
-                key={option.id}
                 id={option.id}
                 title={option.title}
                 image={option.image}
