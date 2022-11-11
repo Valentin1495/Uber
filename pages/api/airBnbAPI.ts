@@ -19,7 +19,7 @@ export const getRooms = async (
         adults: guests,
       },
       headers: {
-        "X-RapidAPI-Key": "40a1382aa9msh820b9e04ce5bbeep1d9467jsn666fe9f68405",
+        "X-RapidAPI-Key": process.env.NEXT_PUBLIC_RAPIDAPI_KEY,
         "X-RapidAPI-Host": "airbnb13.p.rapidapi.com",
       },
     });
