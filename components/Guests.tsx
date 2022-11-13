@@ -9,8 +9,8 @@ const Guests = () => {
   const dispatch = useDispatch();
 
   return (
-    <div className="flex flex-col items-center mt-5 space-y-3">
-      <h2 className="text-xl font-light italic">Number of Guests</h2>
+    <div className="flex flex-col items-center gap-y-5">
+      <em className="text-xl sm:text-2xl font-light">Number of Guests</em>
       <div className="flex items-center gap-x-2">
         <UsersIcon className="h-6 w-6" />
         <input

@@ -8,6 +8,7 @@ import SearchInput from "../components/SearchInput";
 import { RootState } from "../store";
 import CheckoutDate from "../components/CheckoutDate";
 import CheckinDate from "../components/CheckinDate";
+import { format } from "date-fns";
 import { useRouter } from "next/router";
 
 const Search = () => {
@@ -26,6 +27,8 @@ const Search = () => {
   const router = useRouter();
 
   const searchRooms = () => {
+    setOpen(false);
+
     router.push({
       pathname: "/rooms",
       query: {
@@ -38,18 +41,21 @@ const Search = () => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center">
+    <div className="fixed inset-0 mt-4">
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="outline-none hover:shadow-lg hover:duration-500
+        className="mx-auto outline-none hover:shadow-lg hover:duration-500
                   shadow-md border rounded-full border-gray-300
                   px-5 py-1 flex items-center gap-x-2"
       >
         <div>
-          Anywhere <span className="text-gray-500 font-light mx-2">|</span> Any
-          week <span className="text-gray-500 font-light mx-2">|</span>{" "}
-          <span className="text-gray-500 font-light">Add guests</span>
+          {destination} <span className="text-gray-500 font-light mx-2">|</span>
+          {format(new Date(checkin), "MMM dd")}
+          <span className="text-gray-500 font-light mx-2">|</span>
+          {format(new Date(checkout), "MMM dd")}
+          <span className="text-gray-500 font-light mx-2">|</span>
+          {guests} guests
         </div>
         <MagnifyingGlassCircleIcon className="h-10 w-10 text-[#FF385C] -mr-4" />
       </button>
