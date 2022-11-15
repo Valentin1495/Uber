@@ -7,6 +7,7 @@ export type LatLng = google.maps.LatLng;
 interface Room {
   id: string;
   address: string;
+  image: string[];
 }
 
 interface Distance {
