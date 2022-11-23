@@ -4,12 +4,6 @@ export type MapOptions = google.maps.MapOptions;
 export type DirectionsLeg = google.maps.DirectionsLeg;
 export type LatLng = google.maps.LatLng;
 
-interface Room {
-  id: string;
-  address: string;
-  image: string[];
-}
-
 interface Distance {
   text: string;
   value: number;
