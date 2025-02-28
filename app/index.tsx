@@ -13,6 +13,7 @@ import { ThemeContext } from '@/context/theme-context';
 import Octicons from '@expo/vector-icons/Octicons';
 import Animated, { LinearTransition } from 'react-native-reanimated';
 import { StatusBar } from 'expo-status-bar';
+import { useRouter } from 'expo-router';
 
 type Todo = {
   title: string;
@@ -48,14 +49,22 @@ export default function Index() {
     );
   };
 
+  const router = useRouter();
+  const handlePress = (id: number) => {
+    router.push(`/todos/${id}`);
+  };
+
   const renderItem = ({ item }: { item: Todo }) => (
     <View style={styles.todoItem}>
-      <Text
-        onPress={() => toggleTodo(item.id)}
-        style={[styles.todoText, item.completed && styles.completedText]}
+      <Pressable
+        onPress={() => handlePress(item.id)}
+        onLongPress={() => toggleTodo(item.id)}
       >
-        {item.title}
-      </Text>
+        <Text style={[styles.todoText, item.completed && styles.completedText]}>
+          {item.title}
+        </Text>
+      </Pressable>
+
       <Pressable onPress={() => removeTodo(item.id)}>
         <MaterialCommunityIcons
           name='delete-circle'
