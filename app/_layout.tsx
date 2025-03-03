@@ -1,6 +1,6 @@
 import { tokenCache } from '@/cache';
 import { ClerkProvider, ClerkLoaded, useAuth } from '@clerk/clerk-expo';
-import { Slot, SplashScreen } from 'expo-router';
+import { Slot, SplashScreen, useRouter } from 'expo-router';
 import {
   useFonts,
   Outfit_400Regular,
@@ -11,7 +11,7 @@ import { useEffect } from 'react';
 import { ConvexReactClient } from 'convex/react';
 import { ConvexProviderWithClerk } from 'convex/react-clerk';
 
-export default function Layout() {
+export default function RootLayout() {
   SplashScreen.preventAutoHideAsync();
 
   const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
@@ -20,27 +20,43 @@ export default function Layout() {
     throw new Error('Add EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env');
   }
 
-  const [fontsLoaded] = useFonts({
-    Outfit_400Regular,
-    Outfit_500Medium,
-    Outfit_700Bold,
-  });
-
-  useEffect(() => {
-    if (fontsLoaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
-
   const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
     unsavedChangesWarning: false,
   });
+
+  const Layout = () => {
+    const { isLoaded, isSignedIn } = useAuth();
+    const router = useRouter();
+    const [fontsLoaded] = useFonts({
+      Outfit_400Regular,
+      Outfit_500Medium,
+      Outfit_700Bold,
+    });
+
+    useEffect(() => {
+      if (fontsLoaded) {
+        SplashScreen.hideAsync();
+      }
+    }, [fontsLoaded]);
+
+    useEffect(() => {
+      if (!isLoaded) return;
+
+      if (isSignedIn) {
+        router.replace('/(auth)/(tabs)/feed');
+      } else {
+        router.replace('/(public)');
+      }
+    }, [isLoaded, isSignedIn]);
+
+    return <Slot />;
+  };
 
   return (
     <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
       <ClerkLoaded>
         <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-          <Slot />
+          <Layout />
         </ConvexProviderWithClerk>
       </ClerkLoaded>
     </ClerkProvider>
