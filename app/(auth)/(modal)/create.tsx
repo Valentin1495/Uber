@@ -1,9 +1,10 @@
 import { View, Text } from 'react-native';
 
-export default function CreateModal() {
+const CreateModal = () => {
   return (
     <View>
       <Text>CreateModal</Text>
     </View>
   );
-}
+};
+export default CreateModal;

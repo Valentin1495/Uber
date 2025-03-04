@@ -1,8 +1,9 @@
 import { View, Text } from 'react-native';
-export default function Feed() {
+const Feed = () => {
   return (
     <View>
       <Text>Feedasdf</Text>
     </View>
   );
-}
+};
+export default Feed;
