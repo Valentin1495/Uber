@@ -5,6 +5,7 @@ import {
   query,
   QueryCtx,
 } from './_generated/server';
+import { Id } from './_generated/dataModel';
 
 export const createUser = internalMutation({
   args: {
@@ -36,7 +37,17 @@ export const getUserByClerkId = query({
       .query('users')
       .filter((u) => u.eq(u.field('clerkId'), args.clerkId))
       .unique();
-    return user;
+
+    if (!user?.imageUrl || user.imageUrl.startsWith('http')) {
+      return user;
+    }
+
+    const url = await ctx.storage.getUrl(user.imageUrl as Id<'_storage'>);
+
+    return {
+      ...user,
+      imageUrl: url,
+    };
   },
 });
 
@@ -46,7 +57,32 @@ export const getUserById = query({
   },
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.id);
-    return user;
+
+    if (!user?.imageUrl || user.imageUrl.startsWith('http')) {
+      return user;
+    }
+
+    const url = await ctx.storage.getUrl(user.imageUrl as Id<'_storage'>);
+
+    return {
+      ...user,
+      imageUrl: url,
+    };
+  },
+});
+
+export const generateUploadUrl = mutation(async (ctx) => {
+  await getCurrentUserOrThrow(ctx);
+
+  return await ctx.storage.generateUploadUrl();
+});
+
+export const updateImage = mutation({
+  args: { storageId: v.id('_storage'), _id: v.id('users') },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args._id, {
+      imageUrl: args.storageId,
+    });
   },
 });
 
@@ -55,7 +91,6 @@ export const updateUserProfile = mutation({
     _id: v.id('users'),
     bio: v.optional(v.string()),
     websiteUrl: v.optional(v.string()),
-    profilePicture: v.optional(v.string()),
     pushToken: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
