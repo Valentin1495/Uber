@@ -1,6 +1,6 @@
 import { colors } from '@/colors';
 import { Id } from '@/convex/_generated/dataModel';
-import { useUserProfile } from '@/hooks/use-user-profile';
+import { useCurrentUser } from '@/hooks/use-current-user';
 import { useAuth } from '@clerk/clerk-expo';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -13,13 +13,14 @@ import {
 } from 'react-native';
 import UserProfile from './user-profile';
 import Tabs from './tabs';
+
 type Props = {
   id: Id<'users'>;
   showBackButton: boolean;
 };
 
 const Profile = ({ id, showBackButton }: Props) => {
-  const { userProfile } = useUserProfile();
+  const currentUser = useCurrentUser();
   const { signOut } = useAuth();
   const router = useRouter();
   const tabList = ['Threads', 'Replies', 'Reposts'];
@@ -51,7 +52,7 @@ const Profile = ({ id, showBackButton }: Props) => {
             {id ? (
               <UserProfile id={id} />
             ) : (
-              <UserProfile myProfile={userProfile} />
+              <UserProfile currentUser={currentUser} />
             )}
 
             <Tabs tabList={tabList} />

@@ -15,13 +15,13 @@ export const User = {
   pushToken: v.optional(v.string()),
 };
 
-export const Message = {
+export const Thread = {
   userId: v.id('users'), // Foreign key to users table
   threadId: v.optional(v.string()),
-  content: v.string(),
+  text: v.string(),
   likeCount: v.number(), // Default value 0
   commentCount: v.number(), // Default value 0
-  retweetCount: v.number(), // Default value 0
+  repostCount: v.number(), // Default value 0
   mediaFiles: v.optional(v.array(v.string())), // Array of media file URLs
   websiteUrl: v.optional(v.string()), // Optional website URL
 };
@@ -32,5 +32,5 @@ export default defineSchema({
     .searchIndex('searchUsers', {
       searchField: 'username',
     }),
-  messages: defineTable(Message),
+  threads: defineTable(Thread),
 });

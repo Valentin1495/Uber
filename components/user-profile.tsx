@@ -4,26 +4,21 @@ import { Link } from 'expo-router';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 type Props = {
-  myProfile?: {
+  currentUser?: {
     _id: Id<'users'>;
     email: string;
-    clerkId: string;
-    imageUrl?: string;
-    first_name?: string;
-    last_name?: string;
+    imageUrl?: string | null;
     username: string | null;
     bio?: string;
-    location?: string;
     websiteUrl?: string;
     followersCount: number;
-    pushToken?: string;
   } | null;
   id?: string;
 };
-const UserProfile = ({ myProfile, id }: Props) => {
-  if (myProfile) {
+const UserProfile = ({ currentUser, id }: Props) => {
+  if (currentUser) {
     const { email, imageUrl, username, bio, websiteUrl, followersCount, _id } =
-      myProfile;
+      currentUser;
 
     return (
       <View style={styles.container}>
@@ -32,7 +27,7 @@ const UserProfile = ({ myProfile, id }: Props) => {
             <Text style={styles.username}>{username}</Text>
             <Text style={styles.email}>{email}</Text>
           </View>
-          <Image source={{ uri: imageUrl }} style={styles.img} />
+          {imageUrl && <Image source={{ uri: imageUrl }} style={styles.img} />}
         </View>
 
         <Text style={styles.bio}>{bio || 'No bio'}</Text>
