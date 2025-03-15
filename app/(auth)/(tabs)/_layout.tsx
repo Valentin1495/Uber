@@ -1,11 +1,9 @@
 import { colors } from '@/colors';
-import { useAuth } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs, useRouter } from 'expo-router';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 export default function TabsLayout() {
-  const { signOut } = useAuth();
   const router = useRouter();
 
   return (
@@ -18,18 +16,13 @@ export default function TabsLayout() {
       <Tabs.Screen
         name='feed/index'
         options={{
-          title: 'Home',
+          headerShown: false,
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? 'home' : 'home-outline'}
               size={size}
               color={color}
             />
-          ),
-          headerRight: () => (
-            <TouchableOpacity onPress={() => signOut()}>
-              <Text style={styles.logOutText}>Log out</Text>
-            </TouchableOpacity>
           ),
         }}
       />

@@ -10,6 +10,7 @@ import {
 import { useEffect } from 'react';
 import { ConvexReactClient } from 'convex/react';
 import { ConvexProviderWithClerk } from 'convex/react-clerk';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function RootLayout() {
   SplashScreen.preventAutoHideAsync();
@@ -56,7 +57,9 @@ export default function RootLayout() {
     <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
       <ClerkLoaded>
         <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-          <Layout />
+          <SafeAreaProvider>
+            <Layout />
+          </SafeAreaProvider>
         </ConvexProviderWithClerk>
       </ClerkLoaded>
     </ClerkProvider>

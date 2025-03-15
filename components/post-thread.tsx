@@ -17,25 +17,28 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { api } from '@/convex/_generated/api';
 import { useMutation } from 'convex/react';
+import { getStorageId } from '@/utils/get-storage-id';
 
 type Props = {
-  isPreview?: boolean;
   isReply?: boolean;
   threadId?: Id<'threads'>;
 };
 
-const PostThread = ({ isPreview, isReply, threadId }: Props) => {
+const PostThread = ({ isReply, threadId }: Props) => {
   const currentUser = useCurrentUser();
   const [text, setText] = useState('');
   const [mediaFiles, setMediaFiles] = useState<ImagePicker.ImagePickerAsset[]>(
     []
   );
   const postThread = useMutation(api.threads.postThread);
-  const generateUploadUrl = useMutation(api.threads.generateUploadUrl);
   const router = useRouter();
 
   const handlePress = async () => {
-    const storageIds = await Promise.all(mediaFiles.map((f) => uploadImage(f)));
+    if (!text.trim() && mediaFiles.length === 0) return;
+
+    const storageIds = await Promise.all(
+      mediaFiles.map((f) => getStorageId(f, 'threads'))
+    );
     postThread({ threadId, text: text.trim(), mediaFiles: storageIds });
     setText('');
     setMediaFiles([]);
@@ -96,24 +99,6 @@ const PostThread = ({ isPreview, isReply, threadId }: Props) => {
   const deleteImage = (idx: number) =>
     setMediaFiles((prev) => prev.filter((_, index) => index !== idx));
 
-  const uploadImage = async (image: ImagePicker.ImagePickerAsset) => {
-    const postUrl = await generateUploadUrl();
-
-    const response = await fetch(image.uri);
-    const blob = await response.blob();
-
-    const result = await fetch(postUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': image.mimeType!,
-      },
-      body: blob,
-    });
-
-    const { storageId } = await result.json();
-    return storageId;
-  };
-
   if (currentUser) {
     const { imageUrl, username } = currentUser;
 
@@ -144,13 +129,13 @@ const PostThread = ({ isPreview, isReply, threadId }: Props) => {
                 value={text}
                 onChangeText={setText}
                 style={styles.input}
-                autoFocus={!isPreview}
+                autoFocus
               />
             </View>
 
             <TouchableOpacity
               onPress={reset}
-              style={isPreview && styles.resetBtn}
+              style={text.trim() || mediaFiles.length ? '' : styles.hidden}
             >
               <Ionicons name='close' size={20} color={colors.border} />
             </TouchableOpacity>
@@ -259,7 +244,7 @@ const styles = StyleSheet.create({
     borderRadius: 9999,
     padding: 2,
   },
-  resetBtn: {
+  hidden: {
     display: 'none',
   },
 });

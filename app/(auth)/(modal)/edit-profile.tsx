@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { getStorageId } from '@/utils/get-storage-id';
 
 const EditProfile = () => {
   const { id, bio, imageUrl, websiteUrl } = useLocalSearchParams<{
@@ -28,33 +29,18 @@ const EditProfile = () => {
     useState<ImagePicker.ImagePickerAsset | null>(null);
   const router = useRouter();
   const updateUserProfile = useMutation(api.users.updateUserProfile);
-  const generateUploadUrl = useMutation(api.users.generateUploadUrl);
   const updateImage = useMutation(api.users.updateImage);
 
   const updateProfilePic = async () => {
-    // Step 1: Get a short-lived upload URL
-    const postUrl = await generateUploadUrl();
+    const storageId = await getStorageId(selectedImage!, 'users');
 
-    // Convert URI to blob
-    const response = await fetch(selectedImage!.uri);
-    const blob = await response.blob();
-
-    // Step 2: POST the file to the URL
-    const result = await fetch(postUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': selectedImage!.mimeType!,
-      },
-      body: blob,
-    });
-
-    const { storageId } = await result.json();
     // Step 3: Save the newly allocated storage id to the database
     await updateImage({
       storageId,
       _id: id,
     });
   };
+
   const editProfile = async () => {
     updateUserProfile({
       _id: id,
