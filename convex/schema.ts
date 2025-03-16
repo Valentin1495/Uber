@@ -26,6 +26,11 @@ export const Thread = {
   websiteUrl: v.optional(v.string()), // Optional website URL
 };
 
+export const Like = {
+  userId: v.id('users'), // Foreign key to users table
+  threadId: v.id('threads'), // Foreign key to threads table
+};
+
 export default defineSchema({
   users: defineTable(User)
     .index('byClerkId', ['clerkId'])
@@ -33,4 +38,5 @@ export default defineSchema({
       searchField: 'username',
     }),
   threads: defineTable(Thread),
+  likes: defineTable(Like).index('byUserAndThread', ['userId', 'threadId']), // 중복 좋아요 방지
 });

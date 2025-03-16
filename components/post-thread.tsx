@@ -129,7 +129,6 @@ const PostThread = ({ isReply, threadId }: Props) => {
                 value={text}
                 onChangeText={setText}
                 style={styles.input}
-                autoFocus
               />
             </View>
 

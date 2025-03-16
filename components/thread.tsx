@@ -1,25 +1,69 @@
 import { colors } from '@/colors';
+import { api } from '@/convex/_generated/api';
 import { Doc } from '@/convex/_generated/dataModel';
+import { useCurrentUser } from '@/hooks/use-current-user';
 import { formatTime } from '@/utils/format-time';
 import { Ionicons } from '@expo/vector-icons';
+import { useMutation, useQuery } from 'convex/react';
 import { Link } from 'expo-router';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 type Props = {
   thread: Doc<'threads'> & { author: Doc<'users'> };
 };
 
 const Thread = ({ thread }: Props) => {
+  const currentUser = useCurrentUser();
+  const currentUserId = currentUser!._id;
   const {
     _creationTime,
-    _id,
     author,
     text,
     commentCount,
     likeCount,
     repostCount,
     mediaFiles,
+    _id,
   } = thread;
+
+  const isLiked = useQuery(api.likes.checkIfLiked, {
+    userId: currentUserId,
+    threadId: _id,
+  });
+  const [liked, setLiked] = useState(isLiked ?? false);
+  const [likeCnt, setLikeCnt] = useState(likeCount);
+  const likeThread = useMutation(api.likes.likeThread);
+  const unlikeThread = useMutation(api.likes.unlikeThread);
+
+  useEffect(() => {
+    if (isLiked !== undefined) {
+      setLiked(isLiked);
+    }
+  }, [isLiked]);
+
+  const toggleLike = async () => {
+    try {
+      if (isLiked) {
+        await unlikeThread({ userId: currentUserId, threadId: _id });
+        setLiked(false);
+        setLikeCnt((prev) => prev - 1);
+      } else {
+        await likeThread({ userId: currentUserId, threadId: _id });
+        setLiked(true);
+        setLikeCnt((prev) => prev + 1);
+      }
+    } catch (error) {
+      console.error('Error toggling like:', error);
+    }
+  };
 
   return (
     <View style={styles.threadContainer}>
@@ -38,12 +82,31 @@ const Thread = ({ thread }: Props) => {
 
         <Text style={styles.threadText}>{text}</Text>
 
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.mediaFilesContainer}
+        >
+          {mediaFiles &&
+            mediaFiles.map((mediaFile, idx) => (
+              <Image
+                source={{ uri: mediaFile }}
+                style={styles.mediaFile}
+                key={idx}
+              />
+            ))}
+        </ScrollView>
+
         <View style={styles.actionBtns}>
           <View style={styles.actionBtnContainer}>
-            <TouchableOpacity>
-              <Ionicons name='heart-outline' size={24} />
+            <TouchableOpacity onPress={toggleLike}>
+              <Ionicons
+                name={liked ? 'heart' : 'heart-outline'}
+                size={24}
+                color={liked ? 'red' : 'black'}
+              />
             </TouchableOpacity>
-            <Text>{likeCount}</Text>
+            <Text>{likeCnt}</Text>
           </View>
           <View style={styles.actionBtnContainer}>
             <TouchableOpacity>
@@ -109,5 +172,14 @@ const styles = StyleSheet.create({
     color: colors.border,
     fontWeight: 'bold',
     fontSize: 12,
+  },
+  mediaFile: {
+    width: 200,
+    height: 200,
+    borderRadius: 10,
+  },
+  mediaFilesContainer: {
+    gap: 10,
+    marginBottom: 10,
   },
 });

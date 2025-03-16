@@ -7,7 +7,7 @@ import { Id } from './_generated/dataModel';
 export const postThread = mutation({
   args: {
     text: v.string(),
-    mediaFiles: v.optional(v.array(v.string())),
+    mediaFiles: v.optional(v.array(v.id('_storage'))),
     websiteUrl: v.optional(v.string()),
     threadId: v.optional(v.id('threads')),
   },
@@ -29,6 +29,7 @@ export const postThread = mutation({
 export const getThreads = query({
   args: {
     userId: v.optional(v.id('users')),
+    key: v.optional(v.number()),
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
@@ -51,6 +52,7 @@ export const getThreads = query({
       threads.page.map(async (p) => ({
         ...p,
         author: await getUserWithProfilePic(ctx, p.userId),
+        mediaFiles: p.mediaFiles ? await getImageUrls(ctx, p.mediaFiles) : [],
       }))
     );
 
@@ -83,4 +85,12 @@ export const getUserWithProfilePic = async (
     ...user,
     imageUrl,
   };
+};
+
+export const getImageUrls = async (ctx: QueryCtx, storageIds: string[]) => {
+  const imageUrls = await Promise.all(
+    storageIds.map(async (f) => await ctx.storage.getUrl(f as Id<'_storage'>))
+  );
+
+  return imageUrls;
 };
