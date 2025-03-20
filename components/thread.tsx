@@ -5,8 +5,6 @@ import { useCurrentUser } from '@/hooks/use-current-user';
 import { formatTime } from '@/utils/format-time';
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery } from 'convex/react';
-import { Link } from 'expo-router';
-import { useEffect, useState } from 'react';
 import {
   Image,
   ScrollView,
@@ -28,7 +26,6 @@ const Thread = ({ thread }: Props) => {
     author,
     text,
     commentCount,
-    likeCount,
     repostCount,
     mediaFiles,
     _id,
@@ -38,27 +35,75 @@ const Thread = ({ thread }: Props) => {
     userId: currentUserId,
     threadId: _id,
   });
-  const [liked, setLiked] = useState(isLiked ?? false);
-  const [likeCnt, setLikeCnt] = useState(likeCount);
-  const likeThread = useMutation(api.likes.likeThread);
-  const unlikeThread = useMutation(api.likes.unlikeThread);
+  const likeCount = useQuery(api.likes.getLikeCount, { threadId: _id });
+  const likeThread = useMutation(api.likes.likeThread).withOptimisticUpdate(
+    (localStore, args) => {
+      const { threadId, userId } = args;
 
-  useEffect(() => {
-    if (isLiked !== undefined) {
-      setLiked(isLiked);
+      const currentIsLiked = localStore.getQuery(api.likes.checkIfLiked, {
+        userId,
+        threadId,
+      });
+      localStore.setQuery(
+        api.likes.checkIfLiked,
+        {
+          userId,
+          threadId,
+        },
+        !currentIsLiked
+      );
+
+      const currentLikeCount = localStore.getQuery(api.likes.getLikeCount, {
+        threadId,
+      }) as number;
+
+      localStore.setQuery(
+        api.likes.getLikeCount,
+        {
+          threadId,
+        },
+        currentLikeCount + 1
+      );
     }
-  }, [isLiked]);
+  );
+
+  const unlikeThread = useMutation(api.likes.unlikeThread).withOptimisticUpdate(
+    (localStore, args) => {
+      const { threadId, userId } = args;
+
+      const currentIsLiked = localStore.getQuery(api.likes.checkIfLiked, {
+        userId,
+        threadId,
+      });
+      localStore.setQuery(
+        api.likes.checkIfLiked,
+        {
+          userId,
+          threadId,
+        },
+        !currentIsLiked
+      );
+
+      const currentLikeCount = localStore.getQuery(api.likes.getLikeCount, {
+        threadId,
+      }) as number;
+
+      localStore.setQuery(
+        api.likes.getLikeCount,
+        {
+          threadId,
+        },
+        currentLikeCount - 1
+      );
+    }
+  );
 
   const toggleLike = async () => {
     try {
       if (isLiked) {
-        await unlikeThread({ userId: currentUserId, threadId: _id });
-        setLiked(false);
-        setLikeCnt((prev) => prev - 1);
+        unlikeThread({ userId: currentUserId, threadId: _id });
       } else {
-        await likeThread({ userId: currentUserId, threadId: _id });
-        setLiked(true);
-        setLikeCnt((prev) => prev + 1);
+        likeThread({ userId: currentUserId, threadId: _id });
       }
     } catch (error) {
       console.error('Error toggling like:', error);
@@ -101,12 +146,12 @@ const Thread = ({ thread }: Props) => {
           <View style={styles.actionBtnContainer}>
             <TouchableOpacity onPress={toggleLike}>
               <Ionicons
-                name={liked ? 'heart' : 'heart-outline'}
+                name={isLiked ? 'heart' : 'heart-outline'}
                 size={24}
-                color={liked ? 'red' : 'black'}
+                color={isLiked ? 'red' : 'black'}
               />
             </TouchableOpacity>
-            <Text>{likeCnt}</Text>
+            <Text>{likeCount}</Text>
           </View>
           <View style={styles.actionBtnContainer}>
             <TouchableOpacity>

@@ -1,4 +1,4 @@
-import { convexToJson, v } from 'convex/values';
+import { v } from 'convex/values';
 import { mutation, query, QueryCtx } from './_generated/server';
 import { getCurrentUserOrThrow } from './users';
 import { paginationOptsValidator } from 'convex/server';
@@ -29,8 +29,8 @@ export const postThread = mutation({
 export const getThreads = query({
   args: {
     userId: v.optional(v.id('users')),
-    key: v.optional(v.number()),
     paginationOpts: paginationOptsValidator,
+    key: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     let threads;
@@ -59,6 +59,29 @@ export const getThreads = query({
     return {
       ...threads,
       page,
+    };
+  },
+});
+
+export const getThread = query({
+  args: {
+    id: v.id('threads'),
+  },
+  handler: async (ctx, args) => {
+    const thread = await ctx.db.get(args.id);
+
+    if (!thread) {
+      return null;
+    }
+
+    const author = await getUserWithProfilePic(ctx, thread.userId);
+
+    return {
+      ...thread,
+      author,
+      mediaFiles: thread.mediaFiles
+        ? await getImageUrls(ctx, thread.mediaFiles)
+        : [],
     };
   },
 });

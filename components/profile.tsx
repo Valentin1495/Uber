@@ -6,6 +6,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import {
   FlatList,
+  RefreshControl,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -16,8 +17,7 @@ import Tabs from './tabs';
 import Thread from './thread';
 import { usePaginatedQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
-import { useCallback, useState } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
+import { useState } from 'react';
 
 type Props = {
   id: Id<'users'>;
@@ -29,22 +29,24 @@ const Profile = ({ id, showBackButton }: Props) => {
   const { signOut } = useAuth();
   const router = useRouter();
   const tabList = ['Threads', 'Replies', 'Reposts'];
+  const [refreshing, setRefreshing] = useState(false);
   const [queryKey, setQueryKey] = useState(0); // ⭐ 쿼리 키를 위한 상태
-  const { isLoading, loadMore, results, status } = usePaginatedQuery(
+
+  const { isLoading, loadMore, results } = usePaginatedQuery(
     api.threads.getThreads,
     {
       userId: id,
       key: queryKey, // 🔄 쿼리 키가 변경되면 리로드됨
     },
+
     { initialNumItems: 5 }
   );
 
-  // 🔄 탭을 방문할 때마다 queryKey 변경 → 자동 새로고침
-  useFocusEffect(
-    useCallback(() => {
-      setQueryKey((prev) => prev + 1);
-    }, [])
-  );
+  const refreshThreads = () => {
+    setRefreshing(true);
+    setQueryKey((prev) => prev + 1); // refreshKey 변경 → usePaginatedQuery 재실행
+    setTimeout(() => setRefreshing(false), 2000); // UI에서 로딩 표시
+  };
 
   return (
     <View style={styles.container}>
@@ -55,7 +57,11 @@ const Profile = ({ id, showBackButton }: Props) => {
         )}
         keyExtractor={(item) => item._id}
         ListEmptyComponent={
-          <Text style={styles.emptyText}>You haven't posted anything yet.</Text>
+          <Text style={styles.emptyText}>
+            {isLoading || refreshing
+              ? 'Loading...'
+              : "You haven't posted anything yet."}
+          </Text>
         }
         ListHeaderComponent={
           <>
@@ -84,7 +90,11 @@ const Profile = ({ id, showBackButton }: Props) => {
           </>
         }
         onEndReached={() => loadMore(5)}
+        onEndReachedThreshold={0.5}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={refreshThreads} />
+        }
       />
     </View>
   );

@@ -70,3 +70,11 @@ export const checkIfLiked = query({
     return like ? true : false;
   },
 });
+
+export const getLikeCount = query({
+  args: { threadId: v.id('threads') },
+  async handler(ctx, { threadId }) {
+    const thread = await ctx.db.get(threadId);
+    return thread?.likeCount || 0;
+  },
+});

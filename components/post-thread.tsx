@@ -46,6 +46,8 @@ const PostThread = ({ isReply, threadId }: Props) => {
   };
 
   const cancel = () => {
+    if (!text.trim() && mediaFiles.length === 0) return router.dismiss();
+
     Alert.alert('Discard thread?', '', [
       {
         text: 'Discard',
