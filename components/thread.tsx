@@ -5,6 +5,7 @@ import { useCurrentUser } from '@/hooks/use-current-user';
 import { formatTime } from '@/utils/format-time';
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery } from 'convex/react';
+import { Link } from 'expo-router';
 import {
   Image,
   ScrollView,
@@ -36,6 +37,7 @@ const Thread = ({ thread }: Props) => {
     threadId: _id,
   });
   const likeCount = useQuery(api.likes.getLikeCount, { threadId: _id });
+
   const likeThread = useMutation(api.likes.likeThread).withOptimisticUpdate(
     (localStore, args) => {
       const { threadId, userId } = args;
@@ -44,6 +46,7 @@ const Thread = ({ thread }: Props) => {
         userId,
         threadId,
       });
+
       localStore.setQuery(
         api.likes.checkIfLiked,
         {
@@ -66,7 +69,6 @@ const Thread = ({ thread }: Props) => {
       );
     }
   );
-
   const unlikeThread = useMutation(api.likes.unlikeThread).withOptimisticUpdate(
     (localStore, args) => {
       const { threadId, userId } = args;
@@ -75,6 +77,7 @@ const Thread = ({ thread }: Props) => {
         userId,
         threadId,
       });
+
       localStore.setQuery(
         api.likes.checkIfLiked,
         {
@@ -134,11 +137,15 @@ const Thread = ({ thread }: Props) => {
         >
           {mediaFiles &&
             mediaFiles.map((mediaFile, idx) => (
-              <Image
-                source={{ uri: mediaFile }}
-                style={styles.mediaFile}
+              <Link
                 key={idx}
-              />
+                href={{
+                  pathname: '/(auth)/(modal)/image/[url]', // 동적 경로
+                  params: { url: mediaFile }, // mediaFile을 params로 전달
+                }}
+              >
+                <Image source={{ uri: mediaFile }} style={styles.mediaFile} />
+              </Link>
             ))}
         </ScrollView>
 

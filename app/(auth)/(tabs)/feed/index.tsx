@@ -4,9 +4,8 @@ import Thread from '@/components/thread';
 import { api } from '@/convex/_generated/api';
 import { Doc } from '@/convex/_generated/dataModel';
 import { usePaginatedQuery } from 'convex/react';
-import { useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  Animated,
   FlatList,
   Image,
   NativeSyntheticEvent,
@@ -16,8 +15,9 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useTabBar } from '../_layout';
+import { TAB_NAMES, useTabBar } from '../_layout';
 import { NativeScrollEvent } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 
 const Feed = () => {
   const [refreshing, setRefreshing] = useState(false);
@@ -38,9 +38,24 @@ const Feed = () => {
     setTimeout(() => setRefreshing(false), 1000);
   };
 
-  const { updateOpacity } = useTabBar();
+  const { updateOpacity, setActiveTab } = useTabBar();
   const scrollY = useRef(0);
   const [isScrollingDown, setIsScrollingDown] = useState(false);
+  const tabName = TAB_NAMES.FEED;
+
+  useFocusEffect(
+    // Callback should be wrapped in `React.useCallback` to avoid running the effect too often.
+    useCallback(() => {
+      // Invoked whenever the route is focused.
+      setActiveTab(tabName);
+
+      // Return function is invoked whenever the route gets out of focus.
+      return () => {
+        setActiveTab(tabName);
+      };
+    }, [setActiveTab, tabName])
+  );
+
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const currentScrollY = event.nativeEvent.contentOffset.y;
 
@@ -65,13 +80,13 @@ const Feed = () => {
       newOpacity = 0.2 + (scrollDelta / threshold) * 0.8;
     }
 
-    updateOpacity(newOpacity);
+    updateOpacity(tabName, newOpacity);
     scrollY.current = currentScrollY;
   };
 
   return (
     <SafeAreaView>
-      <Animated.FlatList
+      <FlatList
         onScroll={handleScroll}
         scrollEventThrottle={16}
         data={results}
