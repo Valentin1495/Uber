@@ -189,7 +189,6 @@ const styles = StyleSheet.create({
   tabBarBackgroundItem: {
     position: 'absolute',
     inset: 0,
-
     backgroundColor: '#fff',
   },
 });

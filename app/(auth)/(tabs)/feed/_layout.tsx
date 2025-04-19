@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
-import { Pressable, Text } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 
 const FeedLayout = () => {
   const router = useRouter();
@@ -28,9 +28,9 @@ const FeedLayout = () => {
           ),
           headerTintColor: '#000',
           headerLeft: () => (
-            <Pressable onPress={() => router.back()}>
+            <TouchableOpacity onPress={() => router.back()}>
               <Text>Back</Text>
-            </Pressable>
+            </TouchableOpacity>
           ),
           headerTitleAlign: 'center',
         }}

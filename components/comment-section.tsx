@@ -65,6 +65,7 @@ export function CommentSection({ threadId }: { threadId: Id<'threads'> }) {
     loadMore,
     results: comments,
     isLoading,
+    status,
   } = usePaginatedQuery(
     api.comments.getCommentsByPost,
     {
@@ -75,35 +76,43 @@ export function CommentSection({ threadId }: { threadId: Id<'threads'> }) {
     }
   );
 
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size='large' />
-      </View>
-    );
-  }
+  const isLoadingMore = status === 'LoadingMore';
+  const isInitialLoading = isLoading && comments.length === 0;
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Comments</Text>
 
-      <FlatList
-        scrollEventThrottle={16}
-        data={comments}
-        keyExtractor={(item) => item._id}
-        renderItem={({ item }) => (
-          <View>
-            <Comment comment={item} />
-          </View>
-        )}
-        onEndReached={() => loadMore(5)}
-        onEndReachedThreshold={0.5}
-        ListEmptyComponent={() => (
-          <Text style={styles.noCommentsText}>
-            No comments yet. Be the first to comment!
-          </Text>
-        )}
-      />
+      {isInitialLoading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size='large' />
+        </View>
+      ) : (
+        <FlatList
+          scrollEventThrottle={16}
+          data={comments}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => (
+            <View>
+              <Comment comment={item} />
+            </View>
+          )}
+          onEndReached={() => {
+            if (!isLoadingMore) loadMore(5);
+          }}
+          onEndReachedThreshold={0.5}
+          ListEmptyComponent={() => (
+            <Text style={styles.noCommentsText}>
+              No comments yet. Be the first to comment!
+            </Text>
+          )}
+          ListFooterComponent={
+            isLoadingMore ? (
+              <ActivityIndicator size='small' style={{ marginVertical: 16 }} />
+            ) : null
+          }
+        />
+      )}
     </View>
   );
 }

@@ -4,19 +4,18 @@ import Thread from '@/components/thread';
 import { api } from '@/convex/_generated/api';
 import { Doc } from '@/convex/_generated/dataModel';
 import { usePaginatedQuery } from 'convex/react';
-import { useCallback, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
   Image,
-  NativeSyntheticEvent,
   StyleSheet,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { TAB_NAMES, useTabBar } from '../_layout';
-import { NativeScrollEvent } from 'react-native';
-import { Link, useFocusEffect } from 'expo-router';
+import { TAB_NAMES } from '../_layout';
+
+import { Link } from 'expo-router';
+import { useTabScrollHandler } from '@/hooks/use-tab-scroll-handler';
 
 const Feed = () => {
   const { loadMore, results, isLoading, status } = usePaginatedQuery(
@@ -29,51 +28,7 @@ const Feed = () => {
 
   const isLoadingMore = status === 'LoadingMore';
   const isInitialLoading = isLoading && results.length === 0;
-  const { updateOpacity, setActiveTab } = useTabBar();
-  const scrollY = useRef(0);
-  const [isScrollingDown, setIsScrollingDown] = useState(false);
-  const tabName = TAB_NAMES.FEED;
-
-  useFocusEffect(
-    // Callback should be wrapped in `React.useCallback` to avoid running the effect too often.
-    useCallback(() => {
-      // Invoked whenever the route is focused.
-      setActiveTab(tabName);
-
-      // Return function is invoked whenever the route gets out of focus.
-      return () => {
-        setActiveTab(tabName);
-      };
-    }, [setActiveTab, tabName])
-  );
-
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const currentScrollY = event.nativeEvent.contentOffset.y;
-
-    // Determine scroll direction
-    const isScrollDown = currentScrollY > scrollY.current;
-
-    if (isScrollDown !== isScrollingDown) {
-      setIsScrollingDown(isScrollDown);
-    }
-
-    // Calculate opacity based on scroll position and direction
-    // We'll use a threshold of 100 for the full effect
-    const threshold = 100;
-    const scrollDelta = Math.min(threshold, Math.abs(currentScrollY));
-
-    let newOpacity;
-    if (isScrollDown) {
-      // When scrolling down, decrease opacity
-      newOpacity = 1 - (scrollDelta / threshold) * 0.8; // Keep minimum opacity at 0.2
-    } else {
-      // When scrolling up, increase opacity
-      newOpacity = 0.2 + (scrollDelta / threshold) * 0.8;
-    }
-
-    updateOpacity(tabName, newOpacity);
-    scrollY.current = currentScrollY;
-  };
+  const { handleScroll } = useTabScrollHandler(TAB_NAMES.FEED);
 
   return (
     <SafeAreaView style={isInitialLoading && styles.loadingContainer}>

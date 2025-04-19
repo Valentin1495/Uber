@@ -1,5 +1,7 @@
+import { paginationOptsValidator } from 'convex/server';
 import { mutation, query } from './_generated/server';
 import { v } from 'convex/values';
+import { getImageUrls, getUserWithProfilePic } from './threads';
 
 // ✅ Like a thread
 export const likeThread = mutation({
@@ -76,5 +78,45 @@ export const getLikeCount = query({
   async handler(ctx, { threadId }) {
     const thread = await ctx.db.get(threadId);
     return thread?.likeCount || 0;
+  },
+});
+
+export const getLikedThreads = query({
+  args: {
+    userId: v.id('users'),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, { userId, paginationOpts }) => {
+    const likes = await ctx.db
+      .query('likes')
+      .withIndex('byUserAndThread', (q) => q.eq('userId', userId))
+      .order('desc')
+      .paginate(paginationOpts);
+
+    const threadIds = likes.page.map((like) => like.threadId);
+
+    const threads = await Promise.all(
+      threadIds.map(async (threadId) => {
+        const thread = await ctx.db.get(threadId);
+        if (!thread) return null;
+
+        const author = await getUserWithProfilePic(ctx, thread.userId);
+        const mediaFiles = thread.mediaFiles
+          ? await getImageUrls(ctx, thread.mediaFiles)
+          : [];
+
+        return {
+          ...thread,
+          _id: threadId,
+          author,
+          mediaFiles,
+        };
+      })
+    );
+
+    return {
+      ...likes,
+      page: threads.filter((t) => t !== null),
+    };
   },
 });

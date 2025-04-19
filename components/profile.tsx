@@ -3,7 +3,7 @@ import { Doc, Id } from '@/convex/_generated/dataModel';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { useAuth } from '@clerk/clerk-expo';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { Link, useFocusEffect, useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import {
   ActivityIndicator,
   FlatList,
@@ -17,11 +17,11 @@ import Tabs from './tabs';
 import Thread from './thread';
 import { usePaginatedQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
-import { useCallback, useRef, useState } from 'react';
-import { TAB_NAMES, useTabBar } from '@/app/(auth)/(tabs)/_layout';
-import { NativeSyntheticEvent } from 'react-native';
-import { NativeScrollEvent } from 'react-native';
+
+import { TAB_NAMES } from '@/app/(auth)/(tabs)/_layout';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTabScrollHandler } from '@/hooks/use-tab-scroll-handler';
 
 type Props = {
   id?: Id<'users'>;
@@ -44,51 +44,7 @@ const Profile = ({ id, showBackButton }: Props) => {
 
   const isLoadingMore = status === 'LoadingMore';
   const isInitialLoading = isLoading && results.length === 0;
-  const { updateOpacity, setActiveTab } = useTabBar();
-  const scrollY = useRef(0);
-  const [isScrollingDown, setIsScrollingDown] = useState(false);
-  const tabName = TAB_NAMES.PROFILE;
-
-  useFocusEffect(
-    // Callback should be wrapped in `React.useCallback` to avoid running the effect too often.
-    useCallback(() => {
-      // Invoked whenever the route is focused.
-      setActiveTab(tabName);
-
-      // Return function is invoked whenever the route gets out of focus.
-      return () => {
-        setActiveTab(tabName);
-      };
-    }, [setActiveTab, tabName])
-  );
-
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const currentScrollY = event.nativeEvent.contentOffset.y;
-
-    // Determine scroll direction
-    const isScrollDown = currentScrollY > scrollY.current;
-
-    if (isScrollDown !== isScrollingDown) {
-      setIsScrollingDown(isScrollDown);
-    }
-
-    // Calculate opacity based on scroll position and direction
-    // We'll use a threshold of 100 for the full effect
-    const threshold = 100;
-    const scrollDelta = Math.min(threshold, Math.abs(currentScrollY));
-
-    let newOpacity;
-    if (isScrollDown) {
-      // When scrolling down, decrease opacity
-      newOpacity = 1 - (scrollDelta / threshold) * 0.8; // Keep minimum opacity at 0.2
-    } else {
-      // When scrolling up, increase opacity
-      newOpacity = 0.2 + (scrollDelta / threshold) * 0.8;
-    }
-
-    updateOpacity(tabName, newOpacity);
-    scrollY.current = currentScrollY;
-  };
+  const { handleScroll } = useTabScrollHandler(TAB_NAMES.FEED);
 
   return (
     <SafeAreaView
