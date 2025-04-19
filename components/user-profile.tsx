@@ -1,30 +1,54 @@
 import { colors } from '@/colors';
+import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
+import { useQuery } from 'convex/react';
 import { Link } from 'expo-router';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 type Props = {
-  currentUser?: {
+  currentUser: {
     _id: Id<'users'>;
     email: string;
     imageUrl?: string | null;
-    username: string | null;
+    first_name?: string;
+    last_name?: string;
     bio?: string;
     websiteUrl?: string;
     followersCount: number;
   } | null;
-  id?: string;
+  id?: Id<'users'>;
 };
 const UserProfile = ({ currentUser, id }: Props) => {
-  if (currentUser) {
-    const { email, imageUrl, username, bio, websiteUrl, followersCount, _id } =
-      currentUser;
+  let user;
+
+  if (!id) {
+    user = currentUser;
+  } else {
+    const anotherUser = useQuery(api.users.getUserById, {
+      id,
+    });
+    user = id === currentUser?._id ? currentUser : anotherUser;
+  }
+
+  if (user) {
+    const {
+      _id,
+      email,
+      imageUrl,
+      first_name,
+      last_name,
+      bio,
+      websiteUrl,
+      followersCount,
+    } = user;
 
     return (
       <View style={styles.container}>
         <View style={styles.top}>
           <View>
-            <Text style={styles.username}>{username}</Text>
+            <Text style={styles.name}>
+              {first_name} {last_name}
+            </Text>
             <Text style={styles.email}>{email}</Text>
           </View>
           {imageUrl && <Image source={{ uri: imageUrl }} style={styles.img} />}
@@ -50,8 +74,6 @@ const UserProfile = ({ currentUser, id }: Props) => {
       </View>
     );
   }
-
-  if (id) return <Text>User Profile {id}</Text>;
 };
 export default UserProfile;
 
@@ -72,7 +94,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  username: {
+  name: {
     fontSize: 16,
     fontWeight: 'bold',
   },

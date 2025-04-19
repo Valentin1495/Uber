@@ -17,7 +17,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { api } from '@/convex/_generated/api';
 import { useMutation } from 'convex/react';
-import { getStorageId } from '@/utils/get-storage-id';
+import { useFileUploader } from '@/hooks/use-file-uploader';
 
 type Props = {
   isReply?: boolean;
@@ -31,15 +31,30 @@ const PostThread = ({ isReply, threadId }: Props) => {
     []
   );
   const postThread = useMutation(api.threads.postThread);
+  const createComment = useMutation(api.comments.createComment);
   const router = useRouter();
+  const uploadCommentFile = useFileUploader('comments');
+  const uploadThreadFile = useFileUploader('threads');
 
   const handlePress = async () => {
     if (!text.trim() && mediaFiles.length === 0) return;
 
-    const storageIds = await Promise.all(
-      mediaFiles.map((f) => getStorageId(f, 'threads'))
-    );
-    postThread({ threadId, text: text.trim(), mediaFiles: storageIds });
+    if (isReply) {
+      const commentStorageIds = await Promise.all(
+        mediaFiles.map((f) => uploadCommentFile(f))
+      );
+      createComment({
+        text: text.trim(),
+        mediaFiles: commentStorageIds,
+        threadId: threadId!,
+      });
+    } else {
+      const threadStorageIds = await Promise.all(
+        mediaFiles.map((f) => uploadThreadFile(f))
+      );
+      postThread({ text: text.trim(), mediaFiles: threadStorageIds });
+    }
+
     setText('');
     setMediaFiles([]);
     router.dismiss();
@@ -102,7 +117,7 @@ const PostThread = ({ isReply, threadId }: Props) => {
     setMediaFiles((prev) => prev.filter((_, index) => index !== idx));
 
   if (currentUser) {
-    const { imageUrl, username } = currentUser;
+    const { imageUrl, first_name, last_name } = currentUser;
 
     return (
       <View>
@@ -124,9 +139,11 @@ const PostThread = ({ isReply, threadId }: Props) => {
             )}
 
             <View style={styles.inputContainer}>
-              <Text style={styles.username}>{username}</Text>
+              <Text style={styles.username}>
+                {first_name} {last_name}
+              </Text>
               <TextInput
-                placeholder={isReply ? 'Reply to thread' : "What's new?"}
+                placeholder={isReply ? 'Reply to thread...' : "What's new?"}
                 multiline
                 value={text}
                 onChangeText={setText}

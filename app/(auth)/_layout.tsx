@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
-import { TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 
 export default function AuthLayout() {
   const router = useRouter();
@@ -51,6 +51,19 @@ export default function AuthLayout() {
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.dismiss()}>
               <Ionicons name='close' size={24} color={'#000'} />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+      <Stack.Screen
+        name='(modal)/reply/[id]'
+        options={{
+          presentation: 'modal',
+          title: 'Reply',
+          headerTitleAlign: 'center',
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <Text>Cancel</Text>
             </TouchableOpacity>
           ),
         }}

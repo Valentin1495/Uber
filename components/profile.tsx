@@ -3,10 +3,10 @@ import { Doc, Id } from '@/convex/_generated/dataModel';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { useAuth } from '@clerk/clerk-expo';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { Link, useFocusEffect, useRouter } from 'expo-router';
 import {
+  ActivityIndicator,
   FlatList,
-  RefreshControl,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -17,13 +17,14 @@ import Tabs from './tabs';
 import Thread from './thread';
 import { usePaginatedQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { TAB_NAMES, useTabBar } from '@/app/(auth)/(tabs)/_layout';
 import { NativeSyntheticEvent } from 'react-native';
 import { NativeScrollEvent } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type Props = {
-  id: Id<'users'>;
+  id?: Id<'users'>;
   showBackButton: boolean;
 };
 
@@ -32,25 +33,17 @@ const Profile = ({ id, showBackButton }: Props) => {
   const { signOut } = useAuth();
   const router = useRouter();
   const tabList = ['Threads', 'Replies', 'Reposts'];
-  const [refreshing, setRefreshing] = useState(false);
-  const [queryKey, setQueryKey] = useState(0); // ⭐ 쿼리 키를 위한 상태
 
-  const { isLoading, loadMore, results } = usePaginatedQuery(
+  const { isLoading, loadMore, results, status } = usePaginatedQuery(
     api.threads.getThreads,
     {
-      userId: id,
-      key: queryKey, // 🔄 쿼리 키가 변경되면 리로드됨
+      userId: id || currentUser?._id,
     },
-
     { initialNumItems: 5 }
   );
 
-  const refreshThreads = () => {
-    setRefreshing(true);
-    setQueryKey((prev) => prev + 1); // refreshKey 변경 → usePaginatedQuery 재실행
-    setTimeout(() => setRefreshing(false), 2000); // UI에서 로딩 표시
-  };
-
+  const isLoadingMore = status === 'LoadingMore';
+  const isInitialLoading = isLoading && results.length === 0;
   const { updateOpacity, setActiveTab } = useTabBar();
   const scrollY = useRef(0);
   const [isScrollingDown, setIsScrollingDown] = useState(false);
@@ -98,56 +91,75 @@ const Profile = ({ id, showBackButton }: Props) => {
   };
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-        data={results}
-        renderItem={({ item }) => (
-          <Thread thread={item as Doc<'threads'> & { author: Doc<'users'> }} />
-        )}
-        keyExtractor={(item) => item._id}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>
-            {isLoading || refreshing
-              ? 'Loading...'
-              : "You haven't posted anything yet."}
-          </Text>
-        }
-        ListHeaderComponent={
-          <>
-            <View style={styles.header}>
-              {showBackButton ? (
-                <TouchableOpacity onPress={() => router.back()}>
-                  <Ionicons name='chevron-back' size={24} color={'#000'} />
-                  <Text>back</Text>
+    <SafeAreaView
+      style={isInitialLoading ? styles.loadingContainer : styles.container}
+    >
+      {isInitialLoading ? (
+        <ActivityIndicator size='large' />
+      ) : (
+        <FlatList
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+          data={results}
+          renderItem={({ item, index }) => (
+            <Link
+              href={{
+                pathname: '/feed/[id]',
+                params: { id: item._id },
+              }}
+              style={{
+                paddingBottom: index === results.length - 1 ? 36 : 0,
+              }}
+            >
+              <Thread
+                thread={item as Doc<'threads'> & { author: Doc<'users'> }}
+              />
+            </Link>
+          )}
+          keyExtractor={(item) => item._id}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>
+              "You haven't posted anything yet.
+            </Text>
+          }
+          ListHeaderComponent={
+            <>
+              <View style={styles.header}>
+                {showBackButton ? (
+                  <TouchableOpacity
+                    onPress={() => router.back()}
+                    style={styles.back}
+                  >
+                    <Ionicons name='chevron-back' size={24} color={'#000'} />
+                    <Text>back</Text>
+                  </TouchableOpacity>
+                ) : (
+                  <MaterialCommunityIcons name='web' size={24} color={'#000'} />
+                )}
+
+                <TouchableOpacity onPress={() => signOut()}>
+                  <Ionicons name='log-out-outline' size={24} color={'#000'} />
                 </TouchableOpacity>
-              ) : (
-                <MaterialCommunityIcons name='web' size={24} color={'#000'} />
-              )}
+              </View>
 
-              <TouchableOpacity onPress={() => signOut()}>
-                <Ionicons name='log-out-outline' size={24} color={'#000'} />
-              </TouchableOpacity>
-            </View>
+              <UserProfile currentUser={currentUser} id={id} />
 
-            {id ? (
-              <UserProfile id={id} />
-            ) : (
-              <UserProfile currentUser={currentUser} />
-            )}
-
-            <Tabs tabList={tabList} />
-          </>
-        }
-        onEndReached={() => loadMore(5)}
-        onEndReachedThreshold={0.5}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={refreshThreads} />
-        }
-      />
-    </View>
+              <Tabs tabList={tabList} />
+            </>
+          }
+          ListFooterComponent={
+            isLoadingMore ? (
+              <ActivityIndicator size='small' style={{ marginVertical: 16 }} />
+            ) : null
+          }
+          onEndReached={() => {
+            if (!isLoadingMore) loadMore(5);
+          }}
+          onEndReachedThreshold={0.5}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+        />
+      )}
+    </SafeAreaView>
   );
 };
 export default Profile;
@@ -156,6 +168,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   emptyText: {
     fontSize: 16,
@@ -172,5 +189,9 @@ const styles = StyleSheet.create({
   separator: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: '#000',
+  },
+  back: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

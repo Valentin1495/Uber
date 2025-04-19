@@ -83,7 +83,7 @@ export default function TabsLayout() {
         }}
       >
         <Tabs.Screen
-          name='feed/index'
+          name='feed'
           options={{
             headerShown: false,
             tabBarIcon: ({ color, size, focused }) => (
@@ -178,22 +178,18 @@ const styles = StyleSheet.create({
     position: 'absolute',
     borderTopWidth: 0,
     elevation: 0,
-    height: 60,
+    height: 50,
+    paddingTop: 6,
     backgroundColor: 'transparent',
   },
   tabBarBackground: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    inset: 0,
   },
   tabBarBackgroundItem: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'white',
+    inset: 0,
+
+    backgroundColor: '#fff',
   },
 });

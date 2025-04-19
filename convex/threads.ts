@@ -8,8 +8,6 @@ export const postThread = mutation({
   args: {
     text: v.string(),
     mediaFiles: v.optional(v.array(v.id('_storage'))),
-    websiteUrl: v.optional(v.string()),
-    threadId: v.optional(v.id('threads')),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);

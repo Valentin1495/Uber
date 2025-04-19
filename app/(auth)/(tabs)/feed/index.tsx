@@ -4,40 +4,31 @@ import Thread from '@/components/thread';
 import { api } from '@/convex/_generated/api';
 import { Doc } from '@/convex/_generated/dataModel';
 import { usePaginatedQuery } from 'convex/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   NativeSyntheticEvent,
-  RefreshControl,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TAB_NAMES, useTabBar } from '../_layout';
 import { NativeScrollEvent } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { Link, useFocusEffect } from 'expo-router';
 
 const Feed = () => {
-  const [refreshing, setRefreshing] = useState(false);
-  const [queryKey, setQueryKey] = useState(0);
-  const { loadMore, results } = usePaginatedQuery(
+  const { loadMore, results, isLoading, status } = usePaginatedQuery(
     api.threads.getThreads,
-    {
-      key: queryKey,
-    },
+    {},
     {
       initialNumItems: 5,
     }
   );
 
-  const refreshThreads = () => {
-    setRefreshing(true);
-    setQueryKey((prev) => prev + 1);
-    setTimeout(() => setRefreshing(false), 1000);
-  };
-
+  const isLoadingMore = status === 'LoadingMore';
+  const isInitialLoading = isLoading && results.length === 0;
   const { updateOpacity, setActiveTab } = useTabBar();
   const scrollY = useRef(0);
   const [isScrollingDown, setIsScrollingDown] = useState(false);
@@ -85,37 +76,54 @@ const Feed = () => {
   };
 
   return (
-    <SafeAreaView>
-      <FlatList
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-        data={results}
-        renderItem={({ item }) => (
-          <Thread thread={item as Doc<'threads'> & { author: Doc<'users'> }} />
-        )}
-        ListEmptyComponent={() => (
-          <Text style={styles.loading}>Loading...</Text>
-        )}
-        keyExtractor={(item) => item._id}
-        onEndReached={() => loadMore(5)}
-        onEndReachedThreshold={0.5}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-        ListHeaderComponent={
-          <View>
-            <Image
-              source={require('@/assets/images/threads-logo-black.png')}
-              style={styles.logo}
-            />
+    <SafeAreaView style={isInitialLoading && styles.loadingContainer}>
+      {isInitialLoading ? (
+        <ActivityIndicator size='large' />
+      ) : (
+        <FlatList
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+          data={results}
+          renderItem={({ item, index }) => (
+            <Link
+              href={{
+                pathname: '/feed/[id]',
+                params: { id: item._id },
+              }}
+              style={{
+                paddingBottom: index === results.length - 1 ? 36 : 0,
+              }}
+            >
+              <Thread
+                thread={item as Doc<'threads'> & { author: Doc<'users'> }}
+              />
+            </Link>
+          )}
+          keyExtractor={(item) => item._id}
+          onEndReached={() => {
+            if (!isLoadingMore) loadMore(5);
+          }}
+          onEndReachedThreshold={0.5}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          ListHeaderComponent={
+            <View>
+              <Image
+                source={require('@/assets/images/threads-logo-black.png')}
+                style={styles.logo}
+              />
 
-            <PostThread />
+              <PostThread />
 
-            <View style={styles.separator} />
-          </View>
-        }
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={refreshThreads} />
-        }
-      />
+              <View style={styles.separator} />
+            </View>
+          }
+          ListFooterComponent={
+            isLoadingMore ? (
+              <ActivityIndicator size='small' style={{ marginVertical: 16 }} />
+            ) : null
+          }
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -136,5 +144,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginVertical: 16,
     color: colors.border,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

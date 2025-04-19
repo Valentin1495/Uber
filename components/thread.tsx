@@ -1,6 +1,6 @@
 import { colors } from '@/colors';
 import { api } from '@/convex/_generated/api';
-import { Doc } from '@/convex/_generated/dataModel';
+import { Doc, Id } from '@/convex/_generated/dataModel';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { formatTime } from '@/utils/format-time';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,7 +21,8 @@ type Props = {
 
 const Thread = ({ thread }: Props) => {
   const currentUser = useCurrentUser();
-  const currentUserId = currentUser!._id;
+
+  const currentUserId = currentUser?._id as Id<'users'>;
   const {
     _creationTime,
     author,
@@ -121,14 +122,21 @@ const Thread = ({ thread }: Props) => {
 
       <View style={styles.thread}>
         <View style={styles.threadTop}>
-          <Text style={styles.author}>
-            {author?.first_name} {author?.last_name}
-          </Text>
+          <Link
+            href={{
+              pathname: '/(auth)/(tabs)/feed/profile/[id]',
+              params: { id: author?._id },
+            }}
+          >
+            <Text style={styles.author}>
+              {author?.first_name} {author?.last_name}
+            </Text>
+          </Link>
 
           <Text style={styles.time}>{formatTime(_creationTime)}</Text>
         </View>
 
-        <Text style={styles.threadText}>{text}</Text>
+        {text && <Text style={styles.threadText}>{text}</Text>}
 
         <ScrollView
           horizontal
@@ -232,6 +240,6 @@ const styles = StyleSheet.create({
   },
   mediaFilesContainer: {
     gap: 10,
-    marginBottom: 10,
+    marginVertical: 10,
   },
 });

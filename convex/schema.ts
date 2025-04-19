@@ -31,6 +31,15 @@ export const Like = {
   threadId: v.id('threads'), // Foreign key to threads table
 };
 
+export const Comments = {
+  text: v.string(),
+  mediaFiles: v.optional(v.array(v.string())),
+  authorId: v.id('users'),
+  threadId: v.string(),
+  createdAt: v.number(),
+  updatedAt: v.optional(v.number()),
+};
+
 export default defineSchema({
   users: defineTable(User)
     .index('byClerkId', ['clerkId'])
@@ -39,4 +48,7 @@ export default defineSchema({
     }),
   threads: defineTable(Thread),
   likes: defineTable(Like).index('byUserAndThread', ['userId', 'threadId']), // 중복 좋아요 방지
+  comments: defineTable(Comments)
+    .index('by_post', ['threadId'])
+    .index('by_author', ['authorId']),
 });

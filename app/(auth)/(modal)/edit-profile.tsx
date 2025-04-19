@@ -13,7 +13,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { getStorageId } from '@/utils/get-storage-id';
+import { getStorageId } from '@/hooks/use-file-uploader';
 
 const EditProfile = () => {
   const { id, bio, imageUrl, websiteUrl } = useLocalSearchParams<{

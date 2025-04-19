@@ -8,14 +8,23 @@ export const useCurrentUser = () => {
   const currentUser = useQuery(api.users.getUserByClerkId, { clerkId });
 
   if (currentUser) {
-    const { _id, email, imageUrl, username, bio, websiteUrl, followersCount } =
-      currentUser;
+    const {
+      _id,
+      email,
+      imageUrl,
+      bio,
+      websiteUrl,
+      followersCount,
+      first_name,
+      last_name,
+    } = currentUser;
 
     return {
       _id,
       email,
       imageUrl,
-      username,
+      first_name,
+      last_name,
       bio,
       websiteUrl,
       followersCount,
