@@ -5,16 +5,11 @@ import { Doc, Id } from '@/convex/_generated/dataModel';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { usePaginatedQuery } from 'convex/react';
 import { Link } from 'expo-router';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  FlatList,
-} from 'react-native';
+import { View, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TAB_NAMES } from './_layout';
 import { useTabScrollHandler } from '@/hooks/use-tab-scroll-handler';
+
 const Favorites = () => {
   const currentUser = useCurrentUser();
   const { _id } = currentUser || {};

@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TAB_NAMES } from '../_layout';
-
 import { Link } from 'expo-router';
 import { useTabScrollHandler } from '@/hooks/use-tab-scroll-handler';
 

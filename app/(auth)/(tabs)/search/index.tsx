@@ -1,8 +1,115 @@
-import { View, Text } from 'react-native';
-export default function Search() {
-  return (
-    <View>
-      <Text>Search</Text>
-    </View>
+import { colors } from '@/colors';
+import SearchBar from '@/components/search-bar';
+import { api } from '@/convex/_generated/api';
+import { useQuery } from 'convex/react';
+import { Link } from 'expo-router';
+import { useState } from 'react';
+import {
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+const Search = () => {
+  const [searchText, setSearchText] = useState('');
+  const searchResults = useQuery(
+    api.users.searchUsers,
+    searchText.trim() === ''
+      ? 'skip'
+      : {
+          text: searchText.trim(),
+        }
   );
-}
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <SearchBar searchText={searchText} setSearchText={setSearchText} />
+      <FlatList
+        data={searchResults}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }) => (
+          <View style={styles.user}>
+            <Link
+              href={{
+                pathname: '/feed/profile/[id]',
+                params: { id: item._id },
+              }}
+              asChild
+            >
+              <TouchableOpacity style={styles.userInfo}>
+                {item.imageUrl && (
+                  <Image src={item.imageUrl} style={styles.profilePic} />
+                )}
+
+                <View>
+                  <Text style={{ fontWeight: '700', fontSize: 18 }}>
+                    {item.first_name} {item.last_name}
+                  </Text>
+                  <Text style={{ color: '#666', fontSize: 16 }}>
+                    @{item.username}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </Link>
+
+            <TouchableOpacity style={styles.followButton}>
+              <Text style={styles.buttonText}>Follow</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        ListEmptyComponent={() => (
+          <View style={{ padding: 20 }}>
+            <Text style={{ textAlign: 'center', color: '#999', fontSize: 16 }}>
+              No users found
+            </Text>
+          </View>
+        )}
+        ItemSeparatorComponent={() => (
+          <View style={{ height: 1, backgroundColor: '#eee' }} />
+        )}
+        contentContainerStyle={{ paddingBottom: 20 }}
+      />
+    </SafeAreaView>
+  );
+};
+export default Search;
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#fff',
+    flex: 1,
+  },
+  user: {
+    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  userInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  profilePic: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+  followButton: {
+    borderWidth: 1.5,
+    padding: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 100,
+    borderColor: colors.border,
+  },
+  buttonText: {
+    fontWeight: 600,
+    color: colors.submit,
+  },
+});

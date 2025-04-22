@@ -68,6 +68,7 @@ export default function TabsLayout() {
       </View>
     );
   };
+
   return (
     <TabBarContext.Provider
       value={{ opacities, updateOpacity, activeTab, setActiveTab }}
@@ -99,6 +100,8 @@ export default function TabsLayout() {
           name='search/index'
           options={{
             title: 'Search',
+            headerTitleAlign: 'center',
+            headerShadowVisible: false,
             tabBarIcon: ({ color, size, focused }) => (
               <Ionicons
                 name={focused ? 'search' : 'search-outline'}
@@ -106,7 +109,6 @@ export default function TabsLayout() {
                 color={color}
               />
             ),
-            headerShown: false,
           }}
         />
         <Tabs.Screen
@@ -132,6 +134,8 @@ export default function TabsLayout() {
           name='favorites'
           options={{
             title: 'Favorites',
+            headerTitleAlign: 'center',
+            headerShadowVisible: false,
             tabBarIcon: ({ color, size, focused }) => (
               <Ionicons
                 name={focused ? 'heart' : 'heart-outline'}

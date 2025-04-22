@@ -71,6 +71,34 @@ export const getUserById = query({
   },
 });
 
+export const searchUsers = query({
+  args: {
+    text: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const users = await ctx.db
+      .query('users')
+      .withSearchIndex('searchUsers', (q) => q.search('username', args.text))
+      .collect();
+
+    const usersWithImageUrl = await Promise.all(
+      users.map(async (user) => {
+        if (!user?.imageUrl || user.imageUrl.startsWith('http')) {
+          return user;
+        }
+
+        const url = await ctx.storage.getUrl(user.imageUrl as Id<'_storage'>);
+        return {
+          ...user,
+          imageUrl: url,
+        };
+      })
+    );
+
+    return usersWithImageUrl;
+  },
+});
+
 export const generateUploadUrl = mutation(async (ctx) => {
   await getCurrentUserOrThrow(ctx);
 
