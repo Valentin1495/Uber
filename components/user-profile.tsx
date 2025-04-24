@@ -3,7 +3,8 @@ import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { useQuery } from 'convex/react';
 import { Link } from 'expo-router';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FollowButton } from './follow-button';
 
 type Props = {
   currentUser: {
@@ -15,11 +16,13 @@ type Props = {
     bio?: string;
     websiteUrl?: string;
     followersCount: number;
+    followingCount: number;
   } | null;
   id?: Id<'users'>;
 };
 const UserProfile = ({ currentUser, id }: Props) => {
   let user;
+  const isCurrentUser = id === currentUser?._id;
 
   if (!id) {
     user = currentUser;
@@ -27,7 +30,7 @@ const UserProfile = ({ currentUser, id }: Props) => {
     const anotherUser = useQuery(api.users.getUserById, {
       id,
     });
-    user = id === currentUser?._id ? currentUser : anotherUser;
+    user = isCurrentUser ? currentUser : anotherUser;
   }
 
   if (user) {
@@ -40,6 +43,7 @@ const UserProfile = ({ currentUser, id }: Props) => {
       bio,
       websiteUrl,
       followersCount,
+      followingCount,
     } = user;
 
     return (
@@ -56,17 +60,44 @@ const UserProfile = ({ currentUser, id }: Props) => {
 
         <Text style={styles.bio}>{bio || 'No bio'}</Text>
 
-        <Text>
-          {followersCount} followers &middot; {websiteUrl || 'No website'}
-        </Text>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <Link
+            href={{
+              pathname: '/(auth)/(modal)/followers/[id]',
+              params: { id: _id },
+            }}
+            asChild
+          >
+            <TouchableOpacity>
+              <Text>{followersCount} followers</Text>
+            </TouchableOpacity>
+          </Link>
+          <Link
+            href={{
+              pathname: '/(auth)/(modal)/following/[id]',
+              params: { id: _id },
+            }}
+            asChild
+          >
+            <TouchableOpacity>
+              <Text>{followingCount} following</Text>
+            </TouchableOpacity>
+          </Link>
+          <Text>&middot;</Text>
+          <Text> {websiteUrl || 'No website'}</Text>
+        </View>
 
         <View style={styles.btnContainer}>
-          <Link
-            href={`/(auth)/(modal)/edit-profile?imageUrl=${imageUrl}&bio=${bio ? encodeURIComponent(bio) : ''}&websiteUrl=${websiteUrl ? encodeURIComponent(websiteUrl) : ''}&id=${_id}`}
-            style={styles.btn}
-          >
-            <Text style={styles.btnText}>Edit Profile</Text>
-          </Link>
+          {isCurrentUser ? (
+            <Link
+              href={`/(auth)/(modal)/edit-profile?imageUrl=${imageUrl}&bio=${bio ? encodeURIComponent(bio) : ''}&websiteUrl=${websiteUrl ? encodeURIComponent(websiteUrl) : ''}&id=${_id}`}
+              style={styles.btn}
+            >
+              <Text style={styles.btnText}>Edit Profile</Text>
+            </Link>
+          ) : (
+            <FollowButton userId={_id} />
+          )}
           <Link href={'/'} style={styles.btn}>
             <Text style={styles.btnText}>Share Profile</Text>
           </Link>

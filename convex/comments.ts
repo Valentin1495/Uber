@@ -1,9 +1,8 @@
-import { mutation, query, QueryCtx } from './_generated/server';
+import { mutation, query } from './_generated/server';
 import { v } from 'convex/values';
 import { getCurrentUserOrThrow } from './users';
-import { Id } from './_generated/dataModel';
 import { paginationOptsValidator } from 'convex/server';
-import { getUserWithProfilePic } from './threads';
+import { getImageUrls, getUserWithProfilePic } from './threads';
 
 export const createComment = mutation({
   args: {
@@ -54,17 +53,3 @@ export const getCommentsByPost = query({
     };
   },
 });
-
-export const generateUploadUrl = mutation(async (ctx) => {
-  await getCurrentUserOrThrow(ctx);
-
-  return await ctx.storage.generateUploadUrl();
-});
-
-export const getImageUrls = async (ctx: QueryCtx, storageIds: string[]) => {
-  const imageUrls = await Promise.all(
-    storageIds.map(async (f) => await ctx.storage.getUrl(f as Id<'_storage'>))
-  );
-
-  return imageUrls;
-};

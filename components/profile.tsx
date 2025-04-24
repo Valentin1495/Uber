@@ -17,9 +17,7 @@ import Tabs from './tabs';
 import Thread from './thread';
 import { usePaginatedQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
-
 import { TAB_NAMES } from '@/app/(auth)/(tabs)/_layout';
-
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTabScrollHandler } from '@/hooks/use-tab-scroll-handler';
 
@@ -75,19 +73,15 @@ const Profile = ({ id, showBackButton }: Props) => {
           keyExtractor={(item) => item._id}
           ListEmptyComponent={
             <Text style={styles.emptyText}>
-              "You haven't posted anything yet.
+              You haven't posted anything yet.
             </Text>
           }
           ListHeaderComponent={
             <>
               <View style={styles.header}>
                 {showBackButton ? (
-                  <TouchableOpacity
-                    onPress={() => router.back()}
-                    style={styles.back}
-                  >
-                    <Ionicons name='chevron-back' size={24} color={'#000'} />
-                    <Text>back</Text>
+                  <TouchableOpacity onPress={() => router.back()}>
+                    <Text>Back</Text>
                   </TouchableOpacity>
                 ) : (
                   <MaterialCommunityIcons name='web' size={24} color={'#000'} />
@@ -145,9 +139,5 @@ const styles = StyleSheet.create({
   separator: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: '#000',
-  },
-  back: {
-    flexDirection: 'row',
-    alignItems: 'center',
   },
 });

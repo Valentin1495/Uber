@@ -12,6 +12,7 @@ export const User = {
   location: v.optional(v.string()),
   websiteUrl: v.optional(v.string()),
   followersCount: v.number(),
+  followingCount: v.number(),
   pushToken: v.optional(v.string()),
 };
 
@@ -40,6 +41,12 @@ export const Comments = {
   updatedAt: v.optional(v.number()),
 };
 
+export const Follow = {
+  followerId: v.id('users'), // 팔로우하는 사용자
+  followingId: v.id('users'), // 팔로우 당하는 사용자
+  createdAt: v.number(),
+};
+
 export default defineSchema({
   users: defineTable(User)
     .index('byClerkId', ['clerkId'])
@@ -51,4 +58,8 @@ export default defineSchema({
   comments: defineTable(Comments)
     .index('by_post', ['threadId'])
     .index('by_author', ['authorId']),
+  follows: defineTable(Follow)
+    .index('byFollowerAndFollowing', ['followerId', 'followingId']) // 중복 팔로우 방지
+    .index('byFollower', ['followerId']) // 내가 팔로우하는 사람들 조회
+    .index('byFollowing', ['followingId']), // 나를 팔로우하는 사람들 조회
 });

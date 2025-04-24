@@ -15,6 +15,7 @@ export const useCurrentUser = () => {
       bio,
       websiteUrl,
       followersCount,
+      followingCount,
       first_name,
       last_name,
     } = currentUser;
@@ -28,6 +29,7 @@ export const useCurrentUser = () => {
       bio,
       websiteUrl,
       followersCount,
+      followingCount,
     };
   }
 

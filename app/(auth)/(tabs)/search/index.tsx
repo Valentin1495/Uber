@@ -1,6 +1,8 @@
 import { colors } from '@/colors';
+import { FollowButton } from '@/components/follow-button';
 import SearchBar from '@/components/search-bar';
 import { api } from '@/convex/_generated/api';
+import { useCurrentUser } from '@/hooks/use-current-user';
 import { useQuery } from 'convex/react';
 import { Link } from 'expo-router';
 import { useState } from 'react';
@@ -15,6 +17,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Search = () => {
+  const currentUser = useCurrentUser();
+
   const [searchText, setSearchText] = useState('');
   const searchResults = useQuery(
     api.users.searchUsers,
@@ -39,13 +43,14 @@ const Search = () => {
                 params: { id: item._id },
               }}
               asChild
+              style={{ flex: 1 }}
             >
               <TouchableOpacity style={styles.userInfo}>
                 {item.imageUrl && (
                   <Image src={item.imageUrl} style={styles.profilePic} />
                 )}
 
-                <View>
+                <View style={{ maxWidth: 200 }}>
                   <Text style={{ fontWeight: '700', fontSize: 18 }}>
                     {item.first_name} {item.last_name}
                   </Text>
@@ -56,9 +61,9 @@ const Search = () => {
               </TouchableOpacity>
             </Link>
 
-            <TouchableOpacity style={styles.followButton}>
-              <Text style={styles.buttonText}>Follow</Text>
-            </TouchableOpacity>
+            {item._id !== currentUser?._id && (
+              <FollowButton userId={item._id} width={100} />
+            )}
           </View>
         )}
         ListEmptyComponent={() => (
@@ -98,18 +103,5 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-  },
-  followButton: {
-    borderWidth: 1.5,
-    padding: 10,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 100,
-    borderColor: colors.border,
-  },
-  buttonText: {
-    fontWeight: 600,
-    color: colors.submit,
   },
 });

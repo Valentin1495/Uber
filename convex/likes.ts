@@ -3,7 +3,6 @@ import { mutation, query } from './_generated/server';
 import { v } from 'convex/values';
 import { getImageUrls, getUserWithProfilePic } from './threads';
 
-// ✅ Like a thread
 export const likeThread = mutation({
   args: { userId: v.id('users'), threadId: v.id('threads') },
   async handler(ctx, { userId, threadId }) {
@@ -30,7 +29,6 @@ export const likeThread = mutation({
   },
 });
 
-// ✅ Unlike a thread
 export const unlikeThread = mutation({
   args: { userId: v.id('users'), threadId: v.id('threads') },
   async handler(ctx, { userId, threadId }) {

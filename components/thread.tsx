@@ -117,21 +117,24 @@ const Thread = ({ thread }: Props) => {
   return (
     <View style={styles.threadContainer}>
       {author?.imageUrl && (
-        <Image source={{ uri: author.imageUrl }} style={styles.avatar} />
+        <Link
+          href={{
+            pathname: '/(auth)/(tabs)/feed/profile/[id]',
+            params: { id: author?._id },
+          }}
+          asChild
+        >
+          <TouchableOpacity>
+            <Image source={{ uri: author.imageUrl }} style={styles.avatar} />
+          </TouchableOpacity>
+        </Link>
       )}
 
       <View style={styles.thread}>
         <View style={styles.threadTop}>
-          <Link
-            href={{
-              pathname: '/(auth)/(tabs)/feed/profile/[id]',
-              params: { id: author?._id },
-            }}
-          >
-            <Text style={styles.author}>
-              {author?.first_name} {author?.last_name}
-            </Text>
-          </Link>
+          <Text style={styles.author}>
+            {author?.first_name} {author?.last_name}
+          </Text>
 
           <Text style={styles.time}>{formatTime(_creationTime)}</Text>
         </View>

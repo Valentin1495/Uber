@@ -28,7 +28,6 @@ export const getThreads = query({
   args: {
     userId: v.optional(v.id('users')),
     paginationOpts: paginationOptsValidator,
-    key: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     let threads;
@@ -82,12 +81,6 @@ export const getThread = query({
         : [],
     };
   },
-});
-
-export const generateUploadUrl = mutation(async (ctx) => {
-  await getCurrentUserOrThrow(ctx);
-
-  return await ctx.storage.generateUploadUrl();
 });
 
 export const getUserWithProfilePic = async (
