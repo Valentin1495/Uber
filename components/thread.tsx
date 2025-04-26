@@ -141,13 +141,13 @@ const Thread = ({ thread }: Props) => {
 
         {text && <Text style={styles.threadText}>{text}</Text>}
 
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.mediaFilesContainer}
-        >
-          {mediaFiles &&
-            mediaFiles.map((mediaFile, idx) => (
+        {mediaFiles && mediaFiles.length > 0 && (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.mediaFilesContainer}
+          >
+            {mediaFiles.map((mediaFile, idx) => (
               <Link
                 key={idx}
                 href={{
@@ -158,7 +158,8 @@ const Thread = ({ thread }: Props) => {
                 <Image source={{ uri: mediaFile }} style={styles.mediaFile} />
               </Link>
             ))}
-        </ScrollView>
+          </ScrollView>
+        )}
 
         <View style={styles.actionBtns}>
           <View style={styles.actionBtnContainer}>
@@ -243,6 +244,6 @@ const styles = StyleSheet.create({
   },
   mediaFilesContainer: {
     gap: 10,
-    marginVertical: 10,
+    marginBottom: 10,
   },
 });

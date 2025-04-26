@@ -2,18 +2,11 @@ import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { useMutation } from 'convex/react';
 import * as ImagePicker from 'expo-image-picker';
-import { useState } from 'react';
 
 // This is a custom hook that returns the upload function
-export function useFileUploader(apiType: 'users' | 'threads' | 'comments') {
+export function useFileUploader() {
   // Define which API to use based on type
-  const generateUploadUrl = useMutation(
-    apiType === 'users'
-      ? api.users.generateUploadUrl
-      : apiType === 'threads'
-        ? api.threads.generateUploadUrl
-        : api.comments.generateUploadUrl
-  );
+  const generateUploadUrl = useMutation(api.users.generateUploadUrl);
 
   // Return a function that handles the upload
   return async (

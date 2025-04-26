@@ -126,7 +126,7 @@ export default function TabsLayout() {
             tabPress: (event) => {
               event.preventDefault();
               // Handle tab press here
-              router.push('/(auth)/(modal)/create');
+              router.push('/(auth)/(modal)/create?isModal=true');
             },
           }}
         />

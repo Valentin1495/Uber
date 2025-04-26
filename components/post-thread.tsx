@@ -2,7 +2,7 @@ import { colors } from '@/colors';
 import { Id } from '@/convex/_generated/dataModel';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { Ionicons } from '@expo/vector-icons';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   Alert,
@@ -25,6 +25,7 @@ type Props = {
 };
 
 const PostThread = ({ isReply, threadId }: Props) => {
+  const { isModal } = useLocalSearchParams();
   const currentUser = useCurrentUser();
   const [text, setText] = useState('');
   const [mediaFiles, setMediaFiles] = useState<ImagePicker.ImagePickerAsset[]>(
@@ -33,31 +34,29 @@ const PostThread = ({ isReply, threadId }: Props) => {
   const postThread = useMutation(api.threads.postThread);
   const createComment = useMutation(api.comments.createComment);
   const router = useRouter();
-  const uploadCommentFile = useFileUploader('comments');
-  const uploadThreadFile = useFileUploader('threads');
+  const uploadFile = useFileUploader();
 
   const handlePress = async () => {
     if (!text.trim() && mediaFiles.length === 0) return;
 
+    const storageIds = await Promise.all(mediaFiles.map((f) => uploadFile(f)));
+
     if (isReply) {
-      const commentStorageIds = await Promise.all(
-        mediaFiles.map((f) => uploadCommentFile(f))
-      );
       createComment({
         text: text.trim(),
-        mediaFiles: commentStorageIds,
+        mediaFiles: storageIds,
         threadId: threadId!,
       });
     } else {
-      const threadStorageIds = await Promise.all(
-        mediaFiles.map((f) => uploadThreadFile(f))
-      );
-      postThread({ text: text.trim(), mediaFiles: threadStorageIds });
+      postThread({ text: text.trim(), mediaFiles: storageIds });
     }
 
     setText('');
     setMediaFiles([]);
-    router.dismiss();
+
+    if (isModal) {
+      router.dismiss();
+    }
   };
 
   const cancel = () => {
