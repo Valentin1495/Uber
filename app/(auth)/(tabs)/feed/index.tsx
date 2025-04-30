@@ -12,9 +12,6 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { TAB_NAMES } from '../_layout';
-import { Link } from 'expo-router';
-import { useTabScrollHandler } from '@/hooks/use-tab-scroll-handler';
 
 const Feed = () => {
   const { loadMore, results, isLoading, status } = usePaginatedQuery(
@@ -27,7 +24,6 @@ const Feed = () => {
 
   const isLoadingMore = status === 'LoadingMore';
   const isInitialLoading = isLoading && results.length === 0;
-  const { handleScroll } = useTabScrollHandler(TAB_NAMES.FEED);
 
   return (
     <SafeAreaView style={isInitialLoading && styles.loadingContainer}>
@@ -35,15 +31,9 @@ const Feed = () => {
         <ActivityIndicator size='large' />
       ) : (
         <FlatList
-          onScroll={handleScroll}
-          scrollEventThrottle={16}
           data={results}
           renderItem={({ item, index }) => (
-            <Link
-              href={{
-                pathname: '/feed/[id]',
-                params: { id: item._id },
-              }}
+            <View
               style={{
                 paddingBottom: index === results.length - 1 ? 36 : 0,
               }}
@@ -51,7 +41,7 @@ const Feed = () => {
               <Thread
                 thread={item as Doc<'threads'> & { author: Doc<'users'> }}
               />
-            </Link>
+            </View>
           )}
           keyExtractor={(item) => item._id}
           onEndReached={() => {

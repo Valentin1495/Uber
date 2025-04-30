@@ -5,10 +5,13 @@ import { Doc, Id } from '@/convex/_generated/dataModel';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { usePaginatedQuery } from 'convex/react';
 import { Link } from 'expo-router';
-import { View, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { TAB_NAMES } from './_layout';
-import { useTabScrollHandler } from '@/hooks/use-tab-scroll-handler';
+import {
+  View,
+  StyleSheet,
+  ActivityIndicator,
+  FlatList,
+  Text,
+} from 'react-native';
 
 const Favorites = () => {
   const currentUser = useCurrentUser();
@@ -22,25 +25,18 @@ const Favorites = () => {
   );
   const isLoadingMore = status === 'LoadingMore';
   const isInitialLoading = isLoading && results.length === 0;
-  const { handleScroll } = useTabScrollHandler(TAB_NAMES.FAVORITES);
 
   return (
-    <SafeAreaView
+    <View
       style={[styles.container, isInitialLoading && styles.loadingContainer]}
     >
       {isInitialLoading ? (
         <ActivityIndicator size='large' />
       ) : (
         <FlatList
-          onScroll={handleScroll}
-          scrollEventThrottle={16}
           data={results}
           renderItem={({ item, index }) => (
-            <Link
-              href={{
-                pathname: '/feed/[id]',
-                params: { id: item._id },
-              }}
+            <View
               style={{
                 paddingBottom: index === results.length - 1 ? 36 : 0,
               }}
@@ -48,7 +44,7 @@ const Favorites = () => {
               <Thread
                 thread={item as Doc<'threads'> & { author: Doc<'users'> }}
               />
-            </Link>
+            </View>
           )}
           keyExtractor={(item) => item._id}
           onEndReached={() => {
@@ -61,9 +57,15 @@ const Favorites = () => {
               <ActivityIndicator size='small' style={{ marginVertical: 16 }} />
             ) : null
           }
+          ListEmptyComponent={() => (
+            <Text style={styles.emptyText}>
+              You haven't liked any threads yet. Go to the Feed tab and like
+              some threads to see them here.
+            </Text>
+          )}
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 };
 export default Favorites;
@@ -91,5 +93,11 @@ const styles = StyleSheet.create({
   loadingContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 16,
+    color: colors.border,
+    paddingHorizontal: 16,
+    fontStyle: 'italic',
   },
 });

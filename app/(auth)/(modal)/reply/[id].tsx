@@ -3,8 +3,9 @@ import { api } from '@/convex/_generated/api';
 import { Doc, Id } from '@/convex/_generated/dataModel';
 import { useQuery } from 'convex/react';
 import { useLocalSearchParams } from 'expo-router';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 import PostThread from '../create';
+
 const ReplyModal = () => {
   const { id } = useLocalSearchParams();
   const thread = useQuery(api.threads.getThread, { id: id as Id<'threads'> });

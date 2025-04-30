@@ -28,34 +28,44 @@ const Comment = ({ comment }: { comment: CommentProps }) => {
 
   return (
     <View style={styles.commentContainer}>
-      <View style={styles.commentHeader}>
-        <Text style={styles.authorText}>
-          {author?.first_name} {author?.last_name}
-        </Text>
-        <Text style={styles.timeText}>{formatTime(createdAt)}</Text>
+      {author?.imageUrl && (
+        <Image source={{ uri: author.imageUrl }} style={styles.avatar} />
+      )}
+
+      <View style={{ flex: 1 }}>
+        <View style={styles.commentHeader}>
+          <Text style={styles.authorText}>
+            {author?.first_name} {author?.last_name}
+          </Text>
+
+          <Text style={styles.timeText}>{formatTime(createdAt)}</Text>
+        </View>
+
+        {text && <Text style={styles.commentText}>{text}</Text>}
+
+        {mediaFiles && mediaFiles.length > 0 && (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.mediaFilesContainer}
+          >
+            {mediaFiles.map((mediaFile, idx) => {
+              if (mediaFile === null) return null;
+              return (
+                <Link
+                  key={idx}
+                  href={{
+                    pathname: '/(auth)/(modal)/image/[url]',
+                    params: { url: mediaFile },
+                  }}
+                >
+                  <Image source={{ uri: mediaFile }} style={styles.mediaFile} />
+                </Link>
+              );
+            })}
+          </ScrollView>
+        )}
       </View>
-      <Text style={styles.commentText}>{text}</Text>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.mediaFilesContainer}
-      >
-        {mediaFiles &&
-          mediaFiles.map((mediaFile, idx) => {
-            if (mediaFile === null) return null;
-            return (
-              <Link
-                key={idx}
-                href={{
-                  pathname: '/(auth)/(modal)/image/[url]',
-                  params: { url: mediaFile },
-                }}
-              >
-                <Image source={{ uri: mediaFile }} style={styles.mediaFile} />
-              </Link>
-            );
-          })}
-      </ScrollView>
     </View>
   );
 };
@@ -77,11 +87,14 @@ export function CommentSection({ threadId }: { threadId: Id<'threads'> }) {
   );
 
   const isLoadingMore = status === 'LoadingMore';
-  const isInitialLoading = isLoading && comments.length === 0;
+  const commentsCount = comments.length;
+  const isInitialLoading = isLoading && commentsCount === 0;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Comments</Text>
+      <Text style={styles.title}>
+        {commentsCount} {commentsCount === 1 ? 'Comment' : 'Comments'}
+      </Text>
 
       {isInitialLoading ? (
         <View style={styles.loadingContainer}>
@@ -89,14 +102,9 @@ export function CommentSection({ threadId }: { threadId: Id<'threads'> }) {
         </View>
       ) : (
         <FlatList
-          scrollEventThrottle={16}
           data={comments}
           keyExtractor={(item) => item._id}
-          renderItem={({ item }) => (
-            <View>
-              <Comment comment={item} />
-            </View>
-          )}
+          renderItem={({ item }) => <Comment comment={item} />}
           onEndReached={() => {
             if (!isLoadingMore) loadMore(5);
           }}
@@ -165,11 +173,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     marginBottom: 12,
+    flexDirection: 'row',
+    gap: 10,
   },
   commentHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 4,
   },
   authorText: {
     fontWeight: 'bold',
@@ -181,7 +190,6 @@ const styles = StyleSheet.create({
   },
   commentText: {
     fontSize: 15,
-    marginVertical: 4,
   },
   commentActions: {
     flexDirection: 'row',
@@ -229,6 +237,11 @@ const styles = StyleSheet.create({
   },
   mediaFilesContainer: {
     gap: 10,
-    marginBottom: 10,
+    marginTop: 10,
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
   },
 });

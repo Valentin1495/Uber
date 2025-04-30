@@ -2,7 +2,7 @@ import { mutation, query } from './_generated/server';
 import { v } from 'convex/values';
 import { getCurrentUserOrThrow, getUserById } from './users';
 import { paginationOptsValidator } from 'convex/server';
-import { getUserWithProfilePic } from './threads';
+import { getUserByIdHelper } from '../utils/get-user-by-id-helper';
 
 export const followUser = mutation({
   args: {
@@ -147,11 +147,11 @@ export const getFollowers = query({
 
     const page = await Promise.all(
       follows.page.map(async (follow) => {
-        const user = await getUserById(ctx, { id: follow.followerId });
+        const follower = await getUserByIdHelper(ctx, follow.followerId);
 
         return {
           ...follow,
-          user,
+          follower,
         };
       })
     );
@@ -180,11 +180,11 @@ export const getFollowing = query({
     // 팔로잉 사용자 정보 가져오기
     const page = await Promise.all(
       follows.page.map(async (follow) => {
-        const user = await getUserById(ctx, { id: follow.followingId });
+        const followedUser = await getUserByIdHelper(ctx, follow.followingId);
 
         return {
           ...follow,
-          user,
+          followedUser,
         };
       })
     );

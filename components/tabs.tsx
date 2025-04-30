@@ -1,14 +1,17 @@
 import { colors } from '@/colors';
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 type Props = {
   tabList: string[];
 };
+
 const Tabs = ({ tabList }: Props) => {
   const [selectedTab, setSelectedTab] = useState('Threads');
   const handleTabChange = (tab: string) => {
     setSelectedTab(tab);
   };
+
   return (
     <View style={styles.tabContainer}>
       {tabList.map((tab, index) => {

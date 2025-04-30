@@ -15,7 +15,7 @@ import {
   View,
 } from 'react-native';
 
-const ThreadPage = () => {
+const ThreadScreen = () => {
   const { id } = useLocalSearchParams();
   const thread = useQuery(api.threads.getThread, { id: id as Id<'threads'> });
   const currentUser = useCurrentUser();
@@ -53,7 +53,7 @@ const ThreadPage = () => {
     </View>
   );
 };
-export default ThreadPage;
+export default ThreadScreen;
 
 const styles = StyleSheet.create({
   container: {

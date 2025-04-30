@@ -68,6 +68,28 @@ export default function AuthLayout() {
           ),
         }}
       />
+      <Stack.Screen
+        name='(modal)/edit-profile'
+        options={{
+          presentation: 'modal',
+          title: 'Edit Profile',
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.dismiss()}>
+              <Text
+                style={{
+                  fontSize: 16,
+                }}
+              >
+                Cancel
+              </Text>
+            </TouchableOpacity>
+          ),
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
     </Stack>
   );
 }

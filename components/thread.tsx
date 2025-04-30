@@ -123,6 +123,7 @@ const Thread = ({ thread }: Props) => {
             params: { id: author?._id },
           }}
           asChild
+          style={{ height: 40 }}
         >
           <TouchableOpacity>
             <Image source={{ uri: author.imageUrl }} style={styles.avatar} />
@@ -131,15 +132,25 @@ const Thread = ({ thread }: Props) => {
       )}
 
       <View style={styles.thread}>
-        <View style={styles.threadTop}>
-          <Text style={styles.author}>
-            {author?.first_name} {author?.last_name}
-          </Text>
+        <Link
+          href={{
+            pathname: '/feed/[id]',
+            params: { id: _id },
+          }}
+          asChild
+        >
+          <TouchableOpacity>
+            <View style={styles.threadTop}>
+              <Text style={styles.author}>
+                {author?.first_name} {author?.last_name}
+              </Text>
 
-          <Text style={styles.time}>{formatTime(_creationTime)}</Text>
-        </View>
+              <Text style={styles.time}>{formatTime(_creationTime)}</Text>
+            </View>
 
-        {text && <Text style={styles.threadText}>{text}</Text>}
+            {text && <Text style={styles.threadText}>{text}</Text>}
+          </TouchableOpacity>
+        </Link>
 
         {mediaFiles && mediaFiles.length > 0 && (
           <ScrollView
@@ -173,9 +184,17 @@ const Thread = ({ thread }: Props) => {
             <Text>{likeCount}</Text>
           </View>
           <View style={styles.actionBtnContainer}>
-            <TouchableOpacity>
-              <Ionicons name='chatbubble-outline' size={24} />
-            </TouchableOpacity>
+            <Link
+              href={{
+                pathname: '/(auth)/(tabs)/feed/[id]',
+                params: { id: _id },
+              }}
+              asChild
+            >
+              <TouchableOpacity>
+                <Ionicons name='chatbubble-outline' size={24} />
+              </TouchableOpacity>
+            </Link>
             <Text>{commentCount}</Text>
           </View>
           <View style={styles.actionBtnContainer}>
@@ -187,7 +206,7 @@ const Thread = ({ thread }: Props) => {
         </View>
       </View>
 
-      <TouchableOpacity>
+      <TouchableOpacity style={{ height: 24 }}>
         <Ionicons name='ellipsis-horizontal' color={colors.border} size={24} />
       </TouchableOpacity>
     </View>
@@ -207,7 +226,7 @@ const styles = StyleSheet.create({
   threadTop: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    justifyContent: 'space-between',
   },
   avatar: {
     width: 40,
@@ -215,13 +234,14 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   threadText: {
-    marginVertical: 10,
+    marginVertical: 0,
     fontSize: 16,
   },
   actionBtns: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+    marginTop: 10,
   },
   actionBtnContainer: {
     flexDirection: 'row',
@@ -244,6 +264,6 @@ const styles = StyleSheet.create({
   },
   mediaFilesContainer: {
     gap: 10,
-    marginBottom: 10,
+    marginTop: 10,
   },
 });

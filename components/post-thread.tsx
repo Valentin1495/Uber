@@ -35,27 +35,39 @@ const PostThread = ({ isReply, threadId }: Props) => {
   const createComment = useMutation(api.comments.createComment);
   const router = useRouter();
   const uploadFile = useFileUploader();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handlePress = async () => {
     if (!text.trim() && mediaFiles.length === 0) return;
 
-    const storageIds = await Promise.all(mediaFiles.map((f) => uploadFile(f)));
+    try {
+      setIsSubmitting(true);
 
-    if (isReply) {
-      createComment({
-        text: text.trim(),
-        mediaFiles: storageIds,
-        threadId: threadId!,
-      });
-    } else {
-      postThread({ text: text.trim(), mediaFiles: storageIds });
-    }
+      const storageIds = await Promise.all(
+        mediaFiles.map((f) => uploadFile(f))
+      );
 
-    setText('');
-    setMediaFiles([]);
+      if (isReply) {
+        createComment({
+          text: text.trim(),
+          mediaFiles: storageIds,
+          threadId: threadId!,
+        });
+        router.dismiss();
+      } else {
+        postThread({ text: text.trim(), mediaFiles: storageIds });
+        if (isModal) {
+          router.dismiss();
+        }
+      }
 
-    if (isModal) {
-      router.dismiss();
+      setText('');
+      setMediaFiles([]);
+    } catch (error) {
+      console.error('Error posting thread:', error);
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -184,8 +196,14 @@ const PostThread = ({ isReply, threadId }: Props) => {
               <Ionicons name='camera-outline' size={24} color={colors.border} />
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.postBtn} onPress={handlePress}>
-              <Text style={styles.postBtnText}>Post</Text>
+            <TouchableOpacity
+              style={[styles.postBtn, { opacity: isSubmitting ? 0.5 : 1 }]}
+              onPress={handlePress}
+              disabled={isSubmitting}
+            >
+              <Text style={styles.postBtnText}>
+                {isSubmitting ? 'Posting...' : 'Post'}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

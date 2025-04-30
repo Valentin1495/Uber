@@ -11,9 +11,10 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { getStorageId } from '@/hooks/use-file-uploader';
+import { useFileUploader } from '@/hooks/use-file-uploader';
 
 const EditProfile = () => {
   const { id, bio, imageUrl, websiteUrl } = useLocalSearchParams<{
@@ -24,15 +25,16 @@ const EditProfile = () => {
   }>();
   const [updatedBio, setUpdatedBio] = useState(bio);
   const [updatedWebsiteUrl, setUpdatedWebsiteUrl] = useState(websiteUrl);
-  const [updatedImageUrl, setUpdatedImageUrl] = useState(imageUrl);
   const [selectedImage, setSelectedImage] =
     useState<ImagePicker.ImagePickerAsset | null>(null);
   const router = useRouter();
   const updateUserProfile = useMutation(api.users.updateUserProfile);
   const updateImage = useMutation(api.users.updateImage);
+  const uploadFile = useFileUploader();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const updateProfilePic = async () => {
-    const storageId = await getStorageId(selectedImage!, 'users');
+    const storageId = await uploadFile(selectedImage!);
 
     // Step 3: Save the newly allocated storage id to the database
     await updateImage({
@@ -42,17 +44,27 @@ const EditProfile = () => {
   };
 
   const editProfile = async () => {
-    updateUserProfile({
-      _id: id,
-      bio: updatedBio.trim(),
-      websiteUrl: updatedWebsiteUrl.trim(),
-    });
+    try {
+      setIsSubmitting(true);
 
-    if (selectedImage) {
-      await updateProfilePic();
+      updateUserProfile({
+        _id: id,
+        bio: updatedBio.trim(),
+        websiteUrl: updatedWebsiteUrl.trim(),
+      });
+
+      if (selectedImage) {
+        await updateProfilePic();
+      }
+
+      Alert.alert('Success', 'Profile updated successfully');
+      router.dismiss();
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      Alert.alert('Error', 'Profile update failed');
+    } finally {
+      setIsSubmitting(false);
     }
-
-    router.dismiss();
   };
 
   const pickImage = async () => {
@@ -69,42 +81,24 @@ const EditProfile = () => {
   return (
     <View style={styles.container}>
       <Stack.Screen
-        name='(modal)/edit-profile'
         options={{
-          presentation: 'modal',
-          title: 'Edit Profile',
           headerRight: () => (
-            <TouchableOpacity onPress={editProfile}>
+            <TouchableOpacity onPress={editProfile} disabled={isSubmitting}>
               <Text
                 style={{
                   fontWeight: 'bold',
                   fontSize: 16,
-                  color: colors.submit,
+                  color: isSubmitting ? '#aaa' : colors.submit,
                 }}
               >
-                Done
+                {isSubmitting ? 'Updating...' : 'Done'}
               </Text>
             </TouchableOpacity>
           ),
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.dismiss()}>
-              <Text
-                style={{
-                  fontSize: 16,
-                }}
-              >
-                Cancel
-              </Text>
-            </TouchableOpacity>
-          ),
-          headerTitleAlign: 'center',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
         }}
       />
 
-      <TouchableOpacity onPress={pickImage}>
+      <TouchableOpacity onPress={pickImage} style={{ alignSelf: 'center' }}>
         {selectedImage ? (
           <Image source={{ uri: selectedImage.uri }} style={styles.img} />
         ) : (
@@ -138,6 +132,7 @@ const EditProfile = () => {
   );
 };
 export default EditProfile;
+
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,

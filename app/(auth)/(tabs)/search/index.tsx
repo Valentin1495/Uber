@@ -1,4 +1,3 @@
-import { colors } from '@/colors';
 import { FollowButton } from '@/components/follow-button';
 import SearchBar from '@/components/search-bar';
 import { api } from '@/convex/_generated/api';
@@ -14,11 +13,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Search = () => {
   const currentUser = useCurrentUser();
-
   const [searchText, setSearchText] = useState('');
   const searchResults = useQuery(
     api.users.searchUsers,
@@ -30,7 +27,7 @@ const Search = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <SearchBar searchText={searchText} setSearchText={setSearchText} />
       <FlatList
         data={searchResults}
@@ -47,7 +44,10 @@ const Search = () => {
             >
               <TouchableOpacity style={styles.userInfo}>
                 {item.imageUrl && (
-                  <Image src={item.imageUrl} style={styles.profilePic} />
+                  <Image
+                    source={{ uri: item.imageUrl }}
+                    style={styles.profilePic}
+                  />
                 )}
 
                 <View style={{ maxWidth: 200 }}>
@@ -68,7 +68,14 @@ const Search = () => {
         )}
         ListEmptyComponent={() => (
           <View style={{ padding: 20 }}>
-            <Text style={{ textAlign: 'center', color: '#999', fontSize: 16 }}>
+            <Text
+              style={{
+                textAlign: 'center',
+                color: '#999',
+                fontSize: 16,
+                fontStyle: 'italic',
+              }}
+            >
               No users found
             </Text>
           </View>
@@ -78,7 +85,7 @@ const Search = () => {
         )}
         contentContainerStyle={{ paddingBottom: 20 }}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 export default Search;

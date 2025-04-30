@@ -15,13 +15,13 @@ import {
   View,
 } from 'react-native';
 
-const Following = () => {
+const FollowerListScreen = () => {
   const { id } = useLocalSearchParams<{ id: Id<'users'> }>();
   const user = useQuery(api.users.getUserById, {
     id,
   });
   const { isLoading, loadMore, results, status } = usePaginatedQuery(
-    api.follows.getFollowing,
+    api.follows.getFollowers,
     { userId: id },
     {
       initialNumItems: 5,
@@ -36,10 +36,9 @@ const Following = () => {
   return (
     <View>
       <Stack.Screen
-        name='(modal)/following/[id]'
+        name='follower-list/[id]'
         options={{
-          presentation: 'modal',
-          title: `Users followed by ${user?.first_name}`,
+          title: `Users following ${user?.first_name}`,
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()}>
               <Text>Back</Text>
@@ -59,7 +58,7 @@ const Following = () => {
               <Link
                 href={{
                   pathname: '/feed/profile/[id]',
-                  params: { id: item.user?._id as Id<'users'> },
+                  params: { id: item.follower?._id as Id<'users'> },
                 }}
                 asChild
                 style={{
@@ -67,24 +66,27 @@ const Following = () => {
                 }}
               >
                 <TouchableOpacity style={styles.userInfo}>
-                  {item.user?.imageUrl && (
-                    <Image src={item.user.imageUrl} style={styles.profilePic} />
+                  {item.follower?.imageUrl && (
+                    <Image
+                      source={{ uri: item.follower.imageUrl }}
+                      style={styles.profilePic}
+                    />
                   )}
 
                   <View style={{ maxWidth: 200 }}>
                     <Text style={{ fontWeight: '700', fontSize: 18 }}>
-                      {item.user?.first_name} {item.user?.last_name}
+                      {item.follower?.first_name} {item.follower?.last_name}
                     </Text>
                     <Text style={{ color: '#666', fontSize: 16 }}>
-                      @{item.user?.username}
+                      @{item.follower?.username}
                     </Text>
                   </View>
                 </TouchableOpacity>
               </Link>
 
-              {currentUser?._id !== item.user?._id && (
+              {currentUser?._id !== item.follower?._id && (
                 <FollowButton
-                  userId={item.user?._id as Id<'users'>}
+                  userId={item.follower?._id as Id<'users'>}
                   width={100}
                 />
               )}
@@ -97,7 +99,12 @@ const Following = () => {
           ListEmptyComponent={() => (
             <View style={{ padding: 20 }}>
               <Text
-                style={{ textAlign: 'center', color: '#999', fontSize: 16 }}
+                style={{
+                  textAlign: 'center',
+                  color: '#999',
+                  fontSize: 16,
+                  fontStyle: 'italic',
+                }}
               >
                 No users found
               </Text>
@@ -115,7 +122,7 @@ const Following = () => {
     </View>
   );
 };
-export default Following;
+export default FollowerListScreen;
 
 const styles = StyleSheet.create({
   user: {

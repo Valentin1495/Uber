@@ -17,9 +17,7 @@ import Tabs from './tabs';
 import Thread from './thread';
 import { usePaginatedQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
-import { TAB_NAMES } from '@/app/(auth)/(tabs)/_layout';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useTabScrollHandler } from '@/hooks/use-tab-scroll-handler';
 
 type Props = {
   id?: Id<'users'>;
@@ -42,7 +40,6 @@ const Profile = ({ id, showBackButton }: Props) => {
 
   const isLoadingMore = status === 'LoadingMore';
   const isInitialLoading = isLoading && results.length === 0;
-  const { handleScroll } = useTabScrollHandler(TAB_NAMES.FEED);
 
   return (
     <SafeAreaView
@@ -52,15 +49,9 @@ const Profile = ({ id, showBackButton }: Props) => {
         <ActivityIndicator size='large' />
       ) : (
         <FlatList
-          onScroll={handleScroll}
-          scrollEventThrottle={16}
           data={results}
           renderItem={({ item, index }) => (
-            <Link
-              href={{
-                pathname: '/feed/[id]',
-                params: { id: item._id },
-              }}
+            <View
               style={{
                 paddingBottom: index === results.length - 1 ? 36 : 0,
               }}
@@ -68,7 +59,7 @@ const Profile = ({ id, showBackButton }: Props) => {
               <Thread
                 thread={item as Doc<'threads'> & { author: Doc<'users'> }}
               />
-            </Link>
+            </View>
           )}
           keyExtractor={(item) => item._id}
           ListEmptyComponent={
@@ -129,6 +120,7 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     color: colors.border,
     alignSelf: 'center',
+    fontStyle: 'italic',
   },
   header: {
     flexDirection: 'row',

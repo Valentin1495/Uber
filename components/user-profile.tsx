@@ -63,18 +63,21 @@ const UserProfile = ({ currentUser, id }: Props) => {
         <View style={{ flexDirection: 'row', gap: 8 }}>
           <Link
             href={{
-              pathname: '/(auth)/(modal)/followers/[id]',
+              pathname: '/(auth)/follower-list/[id]',
               params: { id: _id },
             }}
             asChild
           >
             <TouchableOpacity>
-              <Text>{followersCount} followers</Text>
+              <Text>
+                {followersCount}{' '}
+                {followersCount === 1 ? 'follower' : 'followers'}
+              </Text>
             </TouchableOpacity>
           </Link>
           <Link
             href={{
-              pathname: '/(auth)/(modal)/following/[id]',
+              pathname: '/(auth)/following-list/[id]',
               params: { id: _id },
             }}
             asChild
@@ -88,7 +91,7 @@ const UserProfile = ({ currentUser, id }: Props) => {
         </View>
 
         <View style={styles.btnContainer}>
-          {isCurrentUser ? (
+          {isCurrentUser || id === undefined ? (
             <Link
               href={`/(auth)/(modal)/edit-profile?imageUrl=${imageUrl}&bio=${bio ? encodeURIComponent(bio) : ''}&websiteUrl=${websiteUrl ? encodeURIComponent(websiteUrl) : ''}&id=${_id}`}
               style={styles.btn}
@@ -98,9 +101,9 @@ const UserProfile = ({ currentUser, id }: Props) => {
           ) : (
             <FollowButton userId={_id} />
           )}
-          <Link href={'/'} style={styles.btn}>
+          <TouchableOpacity style={styles.btn}>
             <Text style={styles.btnText}>Share Profile</Text>
-          </Link>
+          </TouchableOpacity>
         </View>
       </View>
     );
