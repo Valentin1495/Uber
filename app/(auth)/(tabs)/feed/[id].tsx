@@ -5,10 +5,10 @@ import { api } from '@/convex/_generated/api';
 import { Doc, Id } from '@/convex/_generated/dataModel';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { useQuery } from 'convex/react';
+import { Image } from 'expo-image';
 import { Link, useLocalSearchParams } from 'expo-router';
 import {
   ActivityIndicator,
-  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -43,8 +43,10 @@ const ThreadScreen = () => {
         <TouchableOpacity style={styles.replyButton}>
           {currentUser?.imageUrl && (
             <Image
-              source={{ uri: currentUser.imageUrl }}
+              source={currentUser.imageUrl}
               style={styles.profilePic}
+              contentFit='cover'
+              transition={1000}
             />
           )}
           <Text>Reply to this thread</Text>

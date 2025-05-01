@@ -4,7 +4,6 @@ import {
   FlatList,
   StyleSheet,
   ActivityIndicator,
-  Image,
   ScrollView,
 } from 'react-native';
 import { usePaginatedQuery, useQuery } from 'convex/react';
@@ -12,6 +11,7 @@ import { api } from '../convex/_generated/api';
 import { Id } from '../convex/_generated/dataModel';
 import { formatTime } from '@/utils/format-time';
 import { Link } from 'expo-router';
+import { Image } from 'expo-image';
 
 interface CommentProps {
   _id: Id<'comments'>;
@@ -29,7 +29,12 @@ const Comment = ({ comment }: { comment: CommentProps }) => {
   return (
     <View style={styles.commentContainer}>
       {author?.imageUrl && (
-        <Image source={{ uri: author.imageUrl }} style={styles.avatar} />
+        <Image
+          source={author.imageUrl}
+          style={styles.avatar}
+          contentFit='cover'
+          transition={1000}
+        />
       )}
 
       <View style={{ flex: 1 }}>
@@ -59,7 +64,12 @@ const Comment = ({ comment }: { comment: CommentProps }) => {
                     params: { url: mediaFile },
                   }}
                 >
-                  <Image source={{ uri: mediaFile }} style={styles.mediaFile} />
+                  <Image
+                    source={mediaFile}
+                    style={styles.mediaFile}
+                    contentFit='cover'
+                    transition={1000}
+                  />
                 </Link>
               );
             })}

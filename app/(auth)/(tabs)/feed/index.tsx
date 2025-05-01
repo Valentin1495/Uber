@@ -44,6 +44,7 @@ const Feed = () => {
             </View>
           )}
           keyExtractor={(item) => item._id}
+          showsVerticalScrollIndicator={false}
           onEndReached={() => {
             if (!isLoadingMore) loadMore(5);
           }}

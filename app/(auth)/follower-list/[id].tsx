@@ -4,11 +4,11 @@ import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { usePaginatedQuery, useQuery } from 'convex/react';
+import { Image } from 'expo-image';
 import { Link, Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import {
   ActivityIndicator,
   FlatList,
-  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -68,8 +68,10 @@ const FollowerListScreen = () => {
                 <TouchableOpacity style={styles.userInfo}>
                   {item.follower?.imageUrl && (
                     <Image
-                      source={{ uri: item.follower.imageUrl }}
+                      source={item.follower.imageUrl}
                       style={styles.profilePic}
+                      contentFit='cover'
+                      transition={1000}
                     />
                   )}
 

@@ -3,8 +3,9 @@ import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { useQuery } from 'convex/react';
 import { Link } from 'expo-router';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { FollowButton } from './follow-button';
+import { Image } from 'expo-image';
 
 type Props = {
   currentUser: {
@@ -55,7 +56,14 @@ const UserProfile = ({ currentUser, id }: Props) => {
             </Text>
             <Text style={styles.email}>{email}</Text>
           </View>
-          {imageUrl && <Image source={{ uri: imageUrl }} style={styles.img} />}
+          {imageUrl && (
+            <Image
+              source={imageUrl}
+              style={styles.img}
+              contentFit='cover'
+              transition={1000}
+            />
+          )}
         </View>
 
         <Text style={styles.bio}>{bio || 'No bio'}</Text>

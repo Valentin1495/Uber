@@ -6,7 +6,6 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   Alert,
-  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,6 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { api } from '@/convex/_generated/api';
 import { useMutation } from 'convex/react';
@@ -123,6 +123,8 @@ const PostThread = ({ isReply, threadId }: Props) => {
       setMediaFiles([result.assets[0], ...mediaFiles]);
     }
   };
+  const isButtonDisabled =
+    isSubmitting || (!text.trim() && mediaFiles.length === 0);
 
   const deleteImage = (idx: number) =>
     setMediaFiles((prev) => prev.filter((_, index) => index !== idx));
@@ -146,7 +148,12 @@ const PostThread = ({ isReply, threadId }: Props) => {
         <View style={styles.container}>
           <View style={styles.topContainer}>
             {imageUrl && (
-              <Image source={{ uri: imageUrl }} style={styles.avatar} />
+              <Image
+                source={imageUrl}
+                style={styles.avatar}
+                contentFit='cover'
+                transition={1000}
+              />
             )}
 
             <View style={styles.inputContainer}>
@@ -175,7 +182,12 @@ const PostThread = ({ isReply, threadId }: Props) => {
               <ScrollView horizontal>
                 {mediaFiles.map((f, idx) => (
                   <View key={idx} style={styles.imageContainer}>
-                    <Image source={{ uri: f.uri }} style={styles.image} />
+                    <Image
+                      source={f.uri}
+                      style={styles.image}
+                      contentFit='cover'
+                      transition={1000}
+                    />
                     <TouchableOpacity
                       style={styles.deleteBtn}
                       onPress={() => deleteImage(idx)}
@@ -197,9 +209,9 @@ const PostThread = ({ isReply, threadId }: Props) => {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.postBtn, { opacity: isSubmitting ? 0.5 : 1 }]}
+              style={[styles.postBtn, { opacity: isButtonDisabled ? 0.5 : 1 }]}
               onPress={handlePress}
-              disabled={isSubmitting}
+              disabled={isButtonDisabled}
             >
               <Text style={styles.postBtnText}>
                 {isSubmitting ? 'Posting...' : 'Post'}

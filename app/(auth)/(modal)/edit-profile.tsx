@@ -7,7 +7,6 @@ import { useState } from 'react';
 import {
   View,
   Text,
-  Image,
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -15,6 +14,7 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useFileUploader } from '@/hooks/use-file-uploader';
+import { Image } from 'expo-image';
 
 const EditProfile = () => {
   const { id, bio, imageUrl, websiteUrl } = useLocalSearchParams<{
@@ -100,9 +100,19 @@ const EditProfile = () => {
 
       <TouchableOpacity onPress={pickImage} style={{ alignSelf: 'center' }}>
         {selectedImage ? (
-          <Image source={{ uri: selectedImage.uri }} style={styles.img} />
+          <Image
+            source={selectedImage.uri}
+            style={styles.img}
+            contentFit='cover'
+            transition={1000}
+          />
         ) : (
-          <Image source={{ uri: imageUrl }} style={styles.img} />
+          <Image
+            source={imageUrl}
+            style={styles.img}
+            contentFit='cover'
+            transition={1000}
+          />
         )}
       </TouchableOpacity>
 

@@ -3,11 +3,11 @@ import SearchBar from '@/components/search-bar';
 import { api } from '@/convex/_generated/api';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { useQuery } from 'convex/react';
+import { Image } from 'expo-image';
 import { Link } from 'expo-router';
 import { useState } from 'react';
 import {
   FlatList,
-  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -45,8 +45,10 @@ const Search = () => {
               <TouchableOpacity style={styles.userInfo}>
                 {item.imageUrl && (
                   <Image
-                    source={{ uri: item.imageUrl }}
+                    source={item.imageUrl}
                     style={styles.profilePic}
+                    contentFit='cover'
+                    transition={1000}
                   />
                 )}
 

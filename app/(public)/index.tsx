@@ -1,9 +1,10 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '@/colors';
 import { useSSO } from '@clerk/clerk-expo';
 import { useCallback } from 'react';
 import * as AuthSession from 'expo-auth-session';
+import { Image } from 'expo-image';
 
 export default function LogInScreen() {
   // Use the `useSSO()` hook to access the `startSSOFlow()` method
@@ -37,7 +38,12 @@ export default function LogInScreen() {
 
   return (
     <View style={styles.container}>
-      <Image source={require('@/assets/images/login.png')} style={styles.img} />
+      <Image
+        source={require('@/assets/images/login.png')}
+        style={styles.img}
+        contentFit='cover'
+        transition={1000}
+      />
 
       <Text style={styles.heading}>How would you like to use V?</Text>
 
